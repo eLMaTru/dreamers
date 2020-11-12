@@ -1,13 +1,16 @@
 import 'package:dreamers/models/dream.dart';
-import 'package:dreamers/screens/test_view.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../providers/dreams_providers.dart';
 
 class DreamDetailScreen extends StatelessWidget {
   static const routeName = "/dream-detail";
 
   @override
   Widget build(BuildContext context) {
-    final dream = ModalRoute.of(context).settings.arguments as Dream;
+    //just test must be changed
+    Dream dream = ModalRoute.of(context).settings.arguments as Dream;
+    dream = Provider.of<DreamsProvider>(context, listen: false).findById(dream.id);
 
     return Scaffold(
       appBar: AppBar(

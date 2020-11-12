@@ -13,8 +13,7 @@ const DUMMY_DREAMS = const [
       title: 'super power',
       description: 'anoche tiraba rayos',
       isPublic: true,
-      imageUrl:
-          "https://ecoosfera.com/wp-content/imagenes/2019/11/universo-que-forma-tiene-plano-redondo-cosmos-1024x550.jpg"),
+      imageUrl: ''),
   Dream(
       id: 'd3',
       title: 'diluvio',
@@ -22,7 +21,7 @@ const DUMMY_DREAMS = const [
       isPublic: true,
       imageUrl:
           "https://ecoosfera.com/wp-content/imagenes/2019/11/universo-forma-plano-redondo-cosmos-1024x576.jpg"),
-          Dream(
+  Dream(
       id: 'd1',
       title: 'como goku',
       description: 'apareci en un lugar conocino y podia volar',

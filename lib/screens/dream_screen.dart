@@ -8,7 +8,7 @@ class DreamsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(drawer: DrawerItem(),
     appBar: AppBar(title: Text('Dreams'),),
-      body: Container( child:Center(child: Text('favorites'),),
+      body: Container( child:Center(child: Text('Dreams'),),
     ),
     );
   }
