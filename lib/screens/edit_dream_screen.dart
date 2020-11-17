@@ -1,4 +1,7 @@
+import 'package:dreamers/models/dream.dart';
+import 'package:dreamers/providers/dreams_providers.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class EditDreamScreen extends StatefulWidget {
   static const String routeName = '/addDream';
@@ -11,6 +14,8 @@ class _EditDreamScreenState extends State<EditDreamScreen> {
   final _imageFocusNode = FocusNode();
   final _form = GlobalKey<FormState>();
   var _desc = '';
+  var _title = '';
+  bool isLoading = false;
 
   @override
   void dispose() {
@@ -22,8 +27,7 @@ class _EditDreamScreenState extends State<EditDreamScreen> {
 
   @override
   void initState() {
-    _imageFocusNode.addListener(_updateImageUrl); // TODO: implement initState
-    super.initState();
+    _imageFocusNode.addListener(_updateImageUrl);
   }
 
   void _updateImageUrl() {
@@ -33,7 +37,27 @@ class _EditDreamScreenState extends State<EditDreamScreen> {
   }
 
   void _saveForm() {
+    final isValid = _form.currentState.validate();
+    if (!isValid) {
+      return;
+    }
     _form.currentState.save();
+    setState(() {
+      isLoading = true;
+    });
+
+    Provider.of<DreamsProvider>(context, listen: false)
+        .addDream(Dream(
+            id: DateTime.now().toString(),
+            title: _title,
+            description: _desc,
+            isPublic: true))
+        .then((value) {
+      setState(() {
+        isLoading = true;
+      });
+      Navigator.of(context).pop();
+    });
     print(_desc);
   }
 
@@ -46,7 +70,7 @@ class _EditDreamScreenState extends State<EditDreamScreen> {
           IconButton(icon: Icon(Icons.save), onPressed: _saveForm),
         ],
       ),
-      body: Container(
+      body: isLoading ? Center(child: CircularProgressIndicator(),) : Container(
         padding: EdgeInsets.all(15),
         child: Form(
             key: _form,
@@ -60,10 +84,20 @@ class _EditDreamScreenState extends State<EditDreamScreen> {
                   onSaved: (newValue) {
                     _desc = newValue;
                   },
+                  validator: (value) {
+                    if (value.isEmpty) {
+                      return 'Please provide a value';
+                    }
+
+                    return null;
+                  },
                 ),
                 TextFormField(
                   decoration: InputDecoration(labelText: 'Title (optional)'),
                   textInputAction: TextInputAction.next,
+                  onSaved: (newValue) {
+                    _title = newValue;
+                  },
                 ),
                 SizedBox(
                   height: 10,
@@ -111,7 +145,7 @@ class _EditDreamScreenState extends State<EditDreamScreen> {
                       ),
                     ),
                     RaisedButton(
-                      onPressed: () {},
+                      onPressed: _saveForm,
                       child: Text(
                         "Save",
                         style: TextStyle(color: Colors.white),

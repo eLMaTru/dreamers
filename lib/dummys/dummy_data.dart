@@ -1,6 +1,6 @@
 import '../models/dream.dart';
 
-const DUMMY_DREAMS = const [
+ var DUMMY_DREAMS =  [
   Dream(
       id: 'd1',
       title: 'como goku',

@@ -28,13 +28,13 @@ class DreamCard extends StatelessWidget {
 CircleAvatar(
                 child: Text('A'),
                 backgroundColor: Theme.of(context).accentColor,
-              )
+              ),
             ],)
               ,
               Column(mainAxisSize: MainAxisSize.max, 
                 children: [
                   Text(
-                    dream.title.toUpperCase(),
+                    dream.title.isEmpty? '' : dream.title.toUpperCase(),
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 15,
