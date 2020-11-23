@@ -5,25 +5,30 @@ import 'dart:convert' as convert;
 import 'package:http/http.dart' as http;
 
 class DreamsProvider with ChangeNotifier {
-  final url = "http://192.168.0.8:8000/dreams/";
+  final url = "http://192.168.0.10:8000/dreams/";
 
   Future<List<Dream>> get dreamsRemote async {
-    var response = await http.get(url);
-
-    if (response.statusCode == 200) {
-      var jsonResponse = convert.jsonDecode(response.body);
-
-      print(jsonResponse);
-    } else {
-      print('Request failed with status: ${response.statusCode}.');
+    try {
+      final response = await http.get(url, headers: {
+        "Authorization": "Token da60ba5215dacdb60bb290047df619eb951b151d"
+      });
+      var jsonResponse = convert.jsonDecode(response.body) as List<dynamic>;
+      final List<Dream> tmpList = [];
+      jsonResponse.forEach((dreamData) {
+        print(dreamData);
+      });
+     
+      notifyListeners();
+    } catch (error) {
+      print(error);
+      throw error;
     }
-    return null;
   }
 
   List<Dream> _dreams = DUMMY_DREAMS;
 
   List<Dream> get dreams {
-    this.dreamsRemote;
+    //this.dreamsRemote;
     return [..._dreams];
   }
 
@@ -33,8 +38,8 @@ class DreamsProvider with ChangeNotifier {
 
   Future<void> addDream(Dream dream) {
     String token = "da60ba5215dacdb60bb290047df619eb951b151d";
-    String dreamUrl = "http://192.168.0.8:8000/dreams/";
-    
+    String dreamUrl = "http://192.168.0.10:8000/dreams/";
+
     return http
         .post(dreamUrl,
             headers: {

@@ -1,10 +1,11 @@
 import 'package:dreamers/providers/dreams_providers.dart';
 import 'package:dreamers/widgets/drawer_item.dart';
 import 'package:dreamers/widgets/dream_card.dart';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'favorite_screen.dart';
+//import 'package:firebase_admob/firebase_admob.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -15,6 +16,8 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final _formKey = GlobalKey<FormState>();
+
+
 
   void workingWithNavigation(BuildContext context) {
     //Navigator.of(context).pushNamed(FavoriteScreen.routeName);
@@ -108,6 +111,10 @@ class _HomePageState extends State<HomePage> {
         child: Icon(Icons.add),
         onPressed: () => workingWithNavigation(context),
       ),
+      bottomNavigationBar: Container(height: 50.0,),
     );
   }
+
+ 
+   
 }
