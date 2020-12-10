@@ -42,9 +42,9 @@ class DreamCard extends StatelessWidget {
           subtitle: Column(
             children: [
               Text(
-                testText.length > 401
-                    ? testText.substring(0, 400) + '...'
-                    : testText,
+                dream.description.length > 401
+                    ? dream.description.substring(0, 400) + '...'
+                    : dream.description,
                 style: TextStyle(fontSize: 15),
               ),
               SizedBox(

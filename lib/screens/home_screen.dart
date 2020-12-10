@@ -17,8 +17,6 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final _formKey = GlobalKey<FormState>();
 
-
-
   void workingWithNavigation(BuildContext context) {
     //Navigator.of(context).pushNamed(FavoriteScreen.routeName);
     showDialog(
@@ -84,6 +82,22 @@ class _HomePageState extends State<HomePage> {
         },
         context: context);
   }
+  bool _init = false;
+  @override
+  void initState() {
+    // TODO: implement initState
+    _init = true;
+    super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    if (_init) {
+      Provider.of<DreamsProvider>(context).dreamsRemote;
+    }
+    _init = false;
+    super.didChangeDependencies();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -111,10 +125,9 @@ class _HomePageState extends State<HomePage> {
         child: Icon(Icons.add),
         onPressed: () => workingWithNavigation(context),
       ),
-      bottomNavigationBar: Container(height: 50.0,),
+      bottomNavigationBar: Container(
+        height: 50.0,
+      ),
     );
   }
-
- 
-   
 }

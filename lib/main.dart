@@ -1,6 +1,7 @@
 import 'package:dreamers/screens/auth_screen.dart';
 import 'package:dreamers/screens/dream_screen.dart';
 import 'package:dreamers/screens/favorite_screen.dart';
+import 'package:dreamers/screens/splash_screen.dart';
 import 'package:firebase_admob/firebase_admob.dart';
 
 import 'providers/auth_providers.dart';
@@ -14,8 +15,7 @@ import './providers/dreams_providers.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  FirebaseAdMob.instance
-      .initialize(appId: 'ca-app-pub-7751802787814761~8452429840');
+  FirebaseAdMob.instance.initialize(appId: 'ca-app-pub-7751802787814761~8452429840');
   runApp(DreamersApp());
   myBanner
     ..load()
@@ -27,7 +27,7 @@ void main() {
       // Banner Position
       anchorType: AnchorType.bottom,
     );
- /* myInterstitial
+  /* myInterstitial
     ..load()
     ..show(
       anchorType: AnchorType.bottom,
@@ -49,37 +49,44 @@ class DreamersApp extends StatelessWidget {
             primaryColor: Colors.white);
 
     return MultiProvider(
-      providers: [
-        ChangeNotifierProvider.value(
-          value: DreamsProvider(),
-        ),
-         ChangeNotifierProvider(
-          create: (ctx) => AuthProvider(),
-        ),
-      ],
-      child: MaterialApp(
-        theme: themeData,
+        providers: [
+          ChangeNotifierProvider.value(
+            value: DreamsProvider(),
+          ),
+          ChangeNotifierProvider(
+            create: (ctx) => AuthProvider(),
+          ),
+        ],
+        child: Consumer<AuthProvider>(
+          builder: (context, authData, _) => MaterialApp(
+            theme: themeData,
 
-        debugShowCheckedModeBanner: true,
-        //home: HomePage(),
-        initialRoute: AuthScreen.routeName,
-        onGenerateRoute: (settings) {
-          print(settings.arguments);
-          return MaterialPageRoute(builder: (context) => HomePage());
-        },
-        onUnknownRoute: (settings) {
-          return MaterialPageRoute(builder: (context) => HomePage());
-        },
-        routes: {
-          '/': (_) => HomePage(),
-          DreamDetailScreen.routeName: (context) => DreamDetailScreen(),
-          FavoriteScreen.routeName: (context) => FavoriteScreen(),
-          DreamsScreen.routeName: (context) => DreamsScreen(),
-          EditDreamScreen.routeName: (context) => EditDreamScreen(),
-          AuthScreen.routeName: (context) => AuthScreen(),
-        },
-      ),
-    );
+            debugShowCheckedModeBanner: true,
+            home: 
+             authData.isAuth ? HomePage() : FutureBuilder(future: authData.tryAutoLogin(), builder: (context, authResultSnapshot,) {
+               if (authResultSnapshot.connectionState == ConnectionState.waiting) {
+                 return SplashScreen();
+               } else {
+                 return AuthScreen();
+               }}),
+            onGenerateRoute: (settings) {
+              print(settings.arguments);
+              return MaterialPageRoute(builder: (context) => HomePage());
+            },
+            onUnknownRoute: (settings) {
+              return MaterialPageRoute(builder: (context) => HomePage());
+            },
+            routes: {
+              //'/': (_) => HomePage(),
+              DreamDetailScreen.routeName: (context) => DreamDetailScreen(),
+              FavoriteScreen.routeName: (context) => FavoriteScreen(),
+              DreamsScreen.routeName: (context) => DreamsScreen(),
+              EditDreamScreen.routeName: (context) => EditDreamScreen(),
+              AuthScreen.routeName: (context) => AuthScreen(),
+              SplashScreen.routeName: (context) => SplashScreen()
+            },
+          ),
+        ));
   }
 }
 

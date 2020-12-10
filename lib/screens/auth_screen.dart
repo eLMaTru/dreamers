@@ -113,15 +113,25 @@ class _AuthCardState extends State<AuthCard> {
     setState(() {
       _isLoading = true;
     });
-    if (_authMode == AuthMode.Login) {
-      // Log user in
-       Navigator.of(context).pushReplacementNamed('/');
-    } else {
-      // Sign user up
-     /* final response = await Provider.of<AuthProvider>(context, listen: false)
-          .signup(
-              _authData['email'], _authData['username'], _authData['password']);*/
+
+    try {
+      if (_authMode == AuthMode.Login) {
+        // Log user in
+        final response = await Provider.of<AuthProvider>(context, listen: false)
+            .login(_authData['username'], _authData['password']);
+      } else {
+        // Sign user up
+        final response = await Provider.of<AuthProvider>(context, listen: false)
+            .signup(_authData['email'], _authData['username'],
+                _authData['password']);
+      }
       Navigator.of(context).pushReplacementNamed('/');
+    } catch (error) {
+      print(error);
+      setState(() {
+      _isLoading = false;
+    });
+      return;
     }
     setState(() {
       _isLoading = false;

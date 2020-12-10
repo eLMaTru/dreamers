@@ -56,7 +56,8 @@ class _EditDreamScreenState extends State<EditDreamScreen> {
       setState(() {
         isLoading = true;
       });
-      Navigator.of(context).pop();
+      //Navigator.of(context).pop();
+      Navigator.of(context).pushReplacementNamed('/');
     });
     print(_desc);
   }
@@ -70,93 +71,102 @@ class _EditDreamScreenState extends State<EditDreamScreen> {
           IconButton(icon: Icon(Icons.save), onPressed: _saveForm),
         ],
       ),
-      body: isLoading ? Center(child: CircularProgressIndicator(),) : Container(
-        padding: EdgeInsets.all(15),
-        child: Form(
-            key: _form,
-            child: ListView(
-              children: [
-                TextFormField(
-                  maxLength: 5000,
-                  maxLines: 3,
-                  decoration: InputDecoration(labelText: 'Dream *'),
-                  keyboardType: TextInputType.multiline,
-                  onSaved: (newValue) {
-                    _desc = newValue;
-                  },
-                  validator: (value) {
-                    if (value.isEmpty) {
-                      return 'Please provide a value';
-                    }
+      body: isLoading
+          ? Center(
+              child: CircularProgressIndicator(),
+            )
+          : Container(
+              padding: EdgeInsets.all(15),
+              child: Form(
+                  key: _form,
+                  child: ListView(
+                    children: [
+                      TextFormField(
+                        maxLength: 5000,
+                        maxLines: 3,
+                        decoration: InputDecoration(labelText: 'Dream *'),
+                        keyboardType: TextInputType.multiline,
+                        onSaved: (newValue) {
+                          _desc = newValue;
+                        },
+                        validator: (value) {
+                          if (value.isEmpty) {
+                            return 'Please provide a value';
+                          }
 
-                    return null;
-                  },
-                ),
-                TextFormField(
-                  decoration: InputDecoration(labelText: 'Title (optional)'),
-                  textInputAction: TextInputAction.next,
-                  onSaved: (newValue) {
-                    _title = newValue;
-                  },
-                ),
-                SizedBox(
-                  height: 10,
-                ),
-                Row(crossAxisAlignment: CrossAxisAlignment.end, children: [
-                  Container(
-                    decoration: BoxDecoration(
-                        border: Border.all(width: 1, color: Colors.black54)),
-                    height: 100,
-                    width: 100,
-                    margin: EdgeInsets.only(top: 8, right: 10),
-                    child: _imageUrlController.text.isEmpty
-                        ? Text('Enter a URL')
-                        : FittedBox(
-                            child: Image.network(
-                              _imageUrlController.text,
-                              fit: BoxFit.cover,
+                          return null;
+                        },
+                      ),
+                      TextFormField(
+                        decoration:
+                            InputDecoration(labelText: 'Title (optional)'),
+                        textInputAction: TextInputAction.next,
+                        onSaved: (newValue) {
+                          _title = newValue;
+                        },
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Row(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Container(
+                              decoration: BoxDecoration(
+                                  border: Border.all(
+                                      width: 1, color: Colors.black54)),
+                              height: 100,
+                              width: 100,
+                              margin: EdgeInsets.only(top: 8, right: 10),
+                              child: _imageUrlController.text.isEmpty
+                                  ? Text('Enter a URL')
+                                  : FittedBox(
+                                      child: Image.network(
+                                        _imageUrlController.text,
+                                        fit: BoxFit.cover,
+                                      ),
+                                    ),
+                            ),
+                            Expanded(
+                              child: TextFormField(
+                                decoration:
+                                    InputDecoration(labelText: 'Image URL'),
+                                keyboardType: TextInputType.url,
+                                textInputAction: TextInputAction.done,
+                                controller: _imageUrlController,
+                                focusNode: _imageFocusNode,
+                                onEditingComplete: () {
+                                  setState(() {});
+                                },
+                              ),
+                            ),
+                          ]),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          RaisedButton(
+                            onPressed: () {},
+                            child: Text(
+                              "Cancel",
+                              style: TextStyle(),
                             ),
                           ),
-                  ),
-                  Expanded(
-                    child: TextFormField(
-                      decoration: InputDecoration(labelText: 'Image URL'),
-                      keyboardType: TextInputType.url,
-                      textInputAction: TextInputAction.done,
-                      controller: _imageUrlController,
-                      focusNode: _imageFocusNode,
-                      onEditingComplete: () {
-                        setState(() {});
-                      },
-                    ),
-                  ),
-                ]),
-                SizedBox(
-                  height: 10,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    RaisedButton(
-                      onPressed: () {},
-                      child: Text(
-                        "Cancel",
-                        style: TextStyle(),
+                          RaisedButton(
+                            onPressed: _saveForm,
+                            child: Text(
+                              "Save",
+                              style: TextStyle(color: Colors.white),
+                            ),
+                            color: Theme.of(context).accentColor,
+                          ),
+                        ],
                       ),
-                    ),
-                    RaisedButton(
-                      onPressed: _saveForm,
-                      child: Text(
-                        "Save",
-                        style: TextStyle(color: Colors.white),
-                      ),
-                      color: Theme.of(context).accentColor,
-                    ),
-                  ],
-                ),
-              ],
-            )),
-      ),
+                    ],
+                  )),
+            ),
     );
   }
 }
