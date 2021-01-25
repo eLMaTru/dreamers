@@ -8,6 +8,8 @@ class AuthProvider with ChangeNotifier {
   String _userId;
   DateTime _expiryDate;
 
+  String baseUrl = 'http://192.168.0.7:8000/v1/';
+
   bool get isAuth {
     return token != null;
   }
@@ -17,12 +19,12 @@ class AuthProvider with ChangeNotifier {
   }
 
   Future<void> signup(String email, username, password) async {
-    String url = "http://192.168.0.10:8000/users/create/";
+    String signupUrl = "http://192.168.0.7:8000/users/create/";
     try {
       final response = await http.post(
-        url,
+        signupUrl,
         body: convert.jsonEncode(
-            {'username': username, 'email': email, 'password': password}),
+            {'email': email, 'password': password, 'username': username}),
         headers: {
           "Content-Type": "application/json",
           "Accept": "application/json"
@@ -38,7 +40,11 @@ class AuthProvider with ChangeNotifier {
         'token': _token,
         'username': username,
         'email': email,
-        'password': password
+        'password': password,
+        'idToken': data['idToken'],
+        'refreshToken': data['refreshToken'],
+        'expiresIn': data['expiresIn'],
+        'localId': data['localId'],
       });
       prefer.setString('userData', userData);
     } catch (error) {
@@ -48,17 +54,16 @@ class AuthProvider with ChangeNotifier {
   }
 
   Future<void> login(String username, String password) async {
-    String url = "http://192.168.0.10:8000/login/";
+    String loginUrl = "http://192.168.0.7:8000/login/";
+    
     try {
-      final response = await http.post(
-        url,
-        body: convert.jsonEncode({'username': username, 'password': password}),
-        headers: {
+
+      final response = await http
+        .post(loginUrl, body: convert.jsonEncode({"username": username, "password": password}),  headers: {
           "Content-Type": "application/json",
           "Accept": "application/json"
-        },
-      );
-
+        },);
+   
       final data = convert.jsonDecode(response.body) as Map<String, Object>;
       var errorMessage;
       if (data['__all__'] != null) {
@@ -67,8 +72,13 @@ class AuthProvider with ChangeNotifier {
       _token = data['token'];
       notifyListeners();
       final prefer = await SharedPreferences.getInstance();
-      final userData = convert.jsonEncode(
-          {'token': _token, 'username': username, 'password': password});
+      final userData = convert.jsonEncode({
+        'token': _token,
+        'username': username,
+        'password': password,
+        
+        "userId": data['user_Id']
+      });
       prefer.setString('userData', userData);
     } catch (error) {
       print(error);

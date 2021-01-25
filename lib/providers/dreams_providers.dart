@@ -1,3 +1,7 @@
+import 'dart:io';
+
+import 'package:shared_preferences/shared_preferences.dart';
+
 import '../dummys/dummy_data.dart';
 import 'package:dreamers/models/dream.dart';
 import 'package:flutter/cupertino.dart';
@@ -5,18 +9,23 @@ import 'dart:convert' as convert;
 import 'package:http/http.dart' as http;
 
 class DreamsProvider with ChangeNotifier {
-  List<Dream> dreamList=[];
+  String _token;
+  List<Dream> dreamList = [];
   List<Dream> _dreams = DUMMY_DREAMS;
-  final url = "http://192.168.0.10:8000/dreams/";
-  static const dreamsUrl =
-      "https://dreamers-a4ada-default-rtdb.firebaseio.com/dreams.json";
+  final url = "http://192.168.0.7:8000/v1/dreams/";
+  
 
   Future<void> get dreamsRemote async {
+    final prefer = await SharedPreferences.getInstance();
+    final extractedUserData =
+        convert.jsonDecode(prefer.getString('userData')) as Map<String, Object>;
+    print(extractedUserData);
+    _token = extractedUserData['token'];
     dreamList = [];
+    
+
     try {
-      final response = await http.get(
-        dreamsUrl,
-      );
+      final response = await http.get(url+"?auth="+_token,  );
       var jsonResponse =
           convert.jsonDecode(response.body) as Map<String, dynamic>;
       print(jsonResponse);
@@ -36,10 +45,7 @@ class DreamsProvider with ChangeNotifier {
     }
   }
 
-  
-
   List<Dream> get dreams {
-    
     return [...dreamList];
   }
 

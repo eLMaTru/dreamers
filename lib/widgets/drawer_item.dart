@@ -1,7 +1,10 @@
+import 'package:dreamers/providers/auth_providers.dart';
+import 'package:dreamers/screens/auth_screen.dart';
 import 'package:dreamers/screens/dream_screen.dart';
 import 'package:dreamers/screens/edit_dream_screen.dart';
 import 'package:dreamers/screens/favorite_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class DrawerItem extends StatelessWidget {
   @override
@@ -42,14 +45,25 @@ class DrawerItem extends StatelessWidget {
             onTap: () => Navigator.of(context)
                 .pushReplacementNamed(FavoriteScreen.routeName),
           ),
-           ListTile(
+          ListTile(
             leading: Icon(Icons.favorite),
             title: Text(
               'Add Dream',
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
             ),
-            onTap: () => Navigator.of(context)
-                .pushNamed(EditDreamScreen.routeName),
+            onTap: () =>
+                Navigator.of(context).pushNamed(EditDreamScreen.routeName),
+          ),
+          ListTile(
+            leading: Icon(Icons.logout),
+            title: Text(
+              'Logout',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+            ),
+            onTap: () {
+              Provider.of<AuthProvider>(context, listen: false).logout();
+              Navigator.of(context).pushReplacementNamed(AuthScreen.routeName);
+            },
           ),
         ],
       ),

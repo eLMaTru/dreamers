@@ -125,12 +125,12 @@ class _AuthCardState extends State<AuthCard> {
             .signup(_authData['email'], _authData['username'],
                 _authData['password']);
       }
-      Navigator.of(context).pushReplacementNamed('/');
+      Navigator.of(context).pushReplacementNamed('/home');
     } catch (error) {
       print(error);
       setState(() {
-      _isLoading = false;
-    });
+        _isLoading = false;
+      });
       return;
     }
     setState(() {
@@ -191,7 +191,6 @@ class _AuthCardState extends State<AuthCard> {
                         return 'Invalid email!';
                       }
                       return null;
-                      return null;
                     },
                     onSaved: (value) {
                       _authData['email'] = value;
@@ -205,6 +204,7 @@ class _AuthCardState extends State<AuthCard> {
                     if (value.isEmpty || value.length < 5) {
                       return 'Password is too short!';
                     }
+                    return null;
                   },
                   onSaved: (value) {
                     _authData['password'] = value;

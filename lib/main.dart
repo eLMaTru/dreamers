@@ -13,9 +13,24 @@ import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 import './providers/dreams_providers.dart';
 
-void main() {
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_database/ui/firebase_animated_list.dart';
+
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  FirebaseAdMob.instance.initialize(appId: 'ca-app-pub-7751802787814761~8452429840');
+  /*FirebaseAdMob.instance
+      .initialize(appId: 'ca-app-pub-7751802787814761~8452429840');
+  final FirebaseApp app =  await Firebase.initializeApp(
+    name: "dreamers",
+    options: FirebaseOptions(
+      appId: '',
+      apiKey: 'AIzaSyBwJwerO__Jk51-87Up5ZAGP0t5SDlzzfg',
+      messagingSenderId: '',
+      projectId: 'dreamers-a4ada',
+      databaseURL: 'https://dreamers-a4ada-default-rtdb.firebaseio.com',
+    ),
+  );*/
   runApp(DreamersApp());
   myBanner
     ..load()
@@ -60,15 +75,17 @@ class DreamersApp extends StatelessWidget {
         child: Consumer<AuthProvider>(
           builder: (context, authData, _) => MaterialApp(
             theme: themeData,
-
             debugShowCheckedModeBanner: true,
-            home: 
-             authData.isAuth ? HomePage() : FutureBuilder(future: authData.tryAutoLogin(), builder: (context, authResultSnapshot,) {
+            home:
+                authData.isAuth
+                ? HomePage()
+                : AuthScreen() /*FutureBuilder(future: authData.tryAutoLogin(), builder: (context, authResultSnapshot,) {
                if (authResultSnapshot.connectionState == ConnectionState.waiting) {
                  return SplashScreen();
                } else {
                  return AuthScreen();
-               }}),
+               }})*/
+            ,
             onGenerateRoute: (settings) {
               print(settings.arguments);
               return MaterialPageRoute(builder: (context) => HomePage());
@@ -77,7 +94,7 @@ class DreamersApp extends StatelessWidget {
               return MaterialPageRoute(builder: (context) => HomePage());
             },
             routes: {
-              //'/': (_) => HomePage(),
+              HomePage.routeName: (_) => HomePage(),
               DreamDetailScreen.routeName: (context) => DreamDetailScreen(),
               FavoriteScreen.routeName: (context) => FavoriteScreen(),
               DreamsScreen.routeName: (context) => DreamsScreen(),
@@ -87,6 +104,18 @@ class DreamersApp extends StatelessWidget {
             },
           ),
         ));
+  }
+
+  Map<String, WidgetBuilder> get newMethod {
+    return {
+      //'/': (_) => HomePage(),
+      DreamDetailScreen.routeName: (context) => DreamDetailScreen(),
+      FavoriteScreen.routeName: (context) => FavoriteScreen(),
+      DreamsScreen.routeName: (context) => DreamsScreen(),
+      EditDreamScreen.routeName: (context) => EditDreamScreen(),
+      AuthScreen.routeName: (context) => AuthScreen(),
+      SplashScreen.routeName: (context) => SplashScreen()
+    };
   }
 }
 
