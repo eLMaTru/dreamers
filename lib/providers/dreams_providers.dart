@@ -12,26 +12,28 @@ class DreamsProvider with ChangeNotifier {
   String _token;
   List<Dream> dreamList = [];
   List<Dream> _dreams = DUMMY_DREAMS;
-  final url = "http://192.168.0.7:8000/v1/dreams/";
-  
+  final url = "http://192.168.0.7:8000/dreams/";
 
+  //get dreams
   Future<void> get dreamsRemote async {
+
     final prefer = await SharedPreferences.getInstance();
     final extractedUserData =
         convert.jsonDecode(prefer.getString('userData')) as Map<String, Object>;
     print(extractedUserData);
     _token = extractedUserData['token'];
     dreamList = [];
-    
 
     try {
-      final response = await http.get(url+"?auth="+_token,  );
-      var jsonResponse =
-          convert.jsonDecode(response.body) as Map<String, dynamic>;
-      print(jsonResponse);
-      jsonResponse.forEach((dreamId, dreamData) {
+      final response = await http.get(url, headers: {
+        "Authorization": "token " + _token,
+      });
+      var responseList = convert.jsonDecode(response.body) as List<dynamic>;
+
+      responseList.forEach((dreamData) {
+        
         dreamList.add(Dream(
-            id: dreamId,
+            id: dreamData['id'].toString(),
             description: dreamData['description'],
             title: dreamData['title'],
             imageUrl: dreamData['image'],
@@ -43,7 +45,7 @@ class DreamsProvider with ChangeNotifier {
       print(error);
       throw error;
     }
-  }
+  }//get dreams
 
   List<Dream> get dreams {
     return [...dreamList];

@@ -79,12 +79,12 @@ class DreamersApp extends StatelessWidget {
             home:
                 authData.isAuth
                 ? HomePage()
-                : AuthScreen() /*FutureBuilder(future: authData.tryAutoLogin(), builder: (context, authResultSnapshot,) {
+                : FutureBuilder(future: authData.tryAutoLogin(), builder: (context, authResultSnapshot,) {
                if (authResultSnapshot.connectionState == ConnectionState.waiting) {
                  return SplashScreen();
                } else {
                  return AuthScreen();
-               }})*/
+               }})
             ,
             onGenerateRoute: (settings) {
               print(settings.arguments);
