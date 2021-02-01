@@ -11,7 +11,9 @@ class Dream {
   int commentLen;
   int likeLen;
   int dislikeLen;
-  DateTime created;
+  String created;
+  String username;
+  int userId;
 
   Dream(
       {this.id,
@@ -24,5 +26,7 @@ class Dream {
       this.commentLen,
       this.dislikeLen,
       this.likeLen,
-      this.created});
+      this.created,
+      this.username,
+      this.userId});
 }

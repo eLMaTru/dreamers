@@ -16,7 +16,6 @@ class DreamsProvider with ChangeNotifier {
 
   //get dreams
   Future<void> get dreamsRemote async {
-
     final prefer = await SharedPreferences.getInstance();
     final extractedUserData =
         convert.jsonDecode(prefer.getString('userData')) as Map<String, Object>;
@@ -31,13 +30,18 @@ class DreamsProvider with ChangeNotifier {
       var responseList = convert.jsonDecode(response.body) as List<dynamic>;
 
       responseList.forEach((dreamData) {
-        
+        String username = dreamData['user_account']['user']['username'];
+        int userId = dreamData['user_account']['id'];
+        String date = dreamData['created_at'].substring(0, 16).replaceAll('T', " ");
         dreamList.add(Dream(
             id: dreamData['id'].toString(),
             description: dreamData['description'],
             title: dreamData['title'],
             imageUrl: dreamData['image'],
-            isPublic: dreamData['is_public']));
+            isPublic: dreamData['is_public'],
+            username: username,
+            userId: userId,
+            created: date));
       });
 
       notifyListeners();
@@ -45,7 +49,7 @@ class DreamsProvider with ChangeNotifier {
       print(error);
       throw error;
     }
-  }//get dreams
+  } //get dreams
 
   List<Dream> get dreams {
     return [...dreamList];

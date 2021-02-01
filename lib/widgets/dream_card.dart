@@ -24,7 +24,7 @@ class DreamCard extends StatelessWidget {
           leading: Container(
             padding: EdgeInsets.all(1),
             child: CircleAvatar(
-              child: dream.imageUrl.isNotEmpty
+              child: dream.imageUrl == ''
                   ? Text('')
                   : Text('A'),
               backgroundColor: Theme.of(context).accentColor,
@@ -36,7 +36,7 @@ class DreamCard extends StatelessWidget {
               },),
           ),
           title: Text(
-            'Username - date',
+            dream.username +'  '+ dream.created,
             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
           ),
           subtitle: Column(
