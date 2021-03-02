@@ -13,6 +13,7 @@ class _EditDreamScreenState extends State<EditDreamScreen> {
   final _imageUrlController = TextEditingController();
   final _imageFocusNode = FocusNode();
   final _form = GlobalKey<FormState>();
+  
   var _desc = '';
   var _title = '';
   bool isLoading = false;

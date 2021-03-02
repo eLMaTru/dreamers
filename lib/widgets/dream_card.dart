@@ -1,14 +1,22 @@
 import 'package:dreamers/models/dream.dart';
+import 'package:dreamers/providers/dreams_providers.dart';
 import 'package:dreamers/screens/dream_detail_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
-class DreamCard extends StatelessWidget {
+class DreamCard extends StatefulWidget {
   final Dream dream;
-  final testText =
-      "Creates a vertical array of children The [direction], [mainAxisAlignment], [mainAxisSize], [crossAxisAlignment], and [verticalDirection] arguments must not be null. If [crossAxisAlignment] is [CrossAxisAlignment.baseline], then [textBaseline] must not be null The [textDirection] argument defaults to the ambient [Directionality], if any. If there is no ambient directionality, and a text direction is going to be necessary to disambiguate start or end values for the [crossAxisAlignment], the [textDirection] must not be null.";
 
   DreamCard(this.dream);
+
+  @override
+  _DreamCardState createState() => _DreamCardState();
+}
+
+class _DreamCardState extends State<DreamCard> {
+  final testText =
+      "Creates a vertical array of children The [direction], [mainAxisAlignment], [mainAxisSize], [crossAxisAlignment], and [verticalDirection] arguments must not be null. If [crossAxisAlignment] is [CrossAxisAlignment.baseline], then [textBaseline] must not be null The [textDirection] argument defaults to the ambient [Directionality], if any. If there is no ambient directionality, and a text direction is going to be necessary to disambiguate start or end values for the [crossAxisAlignment], the [textDirection] must not be null.";
 
   void selectDream(BuildContext context, Dream dream) {
     Navigator.of(context)
@@ -23,64 +31,137 @@ class DreamCard extends StatelessWidget {
       child: ListTile(
           leading: Container(
             padding: EdgeInsets.all(1),
-            child: CircleAvatar(
-              child: dream.imageUrl == ''
-                  ? Text('')
-                  : Text('A'),
-              backgroundColor: Theme.of(context).accentColor,
-              radius: 22,
-            backgroundImage: NetworkImage(
-                  'https://www.080digital.com/wp-content/uploads/2017/06/pinterest.jpg'),
-              onBackgroundImageError: (exception, stackTrace) {
-                print(exception);
-              },),
+            child: widget.dream.userImage != null
+                ? CircleAvatar(
+                    child: Text(''),
+                    backgroundColor: Theme.of(context).accentColor,
+                    radius: 22,
+                    backgroundImage: NetworkImage(widget.dream.userImage),
+                    onBackgroundImageError: (exception, stackTrace) {
+                      print(exception);
+                    },
+                  )
+                : CircleAvatar(
+                    child: Text(
+                      widget.dream.username.toUpperCase().substring(0, 1),
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    backgroundColor: Theme.of(context).accentColor,
+                    radius: 22,
+                  ),
           ),
-          title: Text(
-            dream.username +'  '+ dream.created,
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-          ),
+          title: Row(children: [
+            Text(
+              widget.dream.username,
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+            ),
+            SizedBox(
+              width: 10,
+            ),
+            Text(
+              widget.dream.created,
+              style: TextStyle(fontWeight: FontWeight.w300, fontSize: 15),
+            )
+          ]),
           subtitle: Column(
             children: [
+              widget.dream.title == '' ? Text('') : Text(widget.dream.title),
               Text(
-                dream.description.length > 401
-                    ? dream.description.substring(0, 400) + '...'
-                    : dream.description,
+                widget.dream.description.length > 401
+                    ? widget.dream.description.substring(0, 400) + '...'
+                    : widget.dream.description,
                 style: TextStyle(fontSize: 15),
               ),
               SizedBox(
-                height: dream.imageUrl.isNotEmpty ? 10 : 0,
+                height: widget.dream.imageUrl.isNotEmpty ? 10 : 0,
               ),
-              dream.imageUrl.isNotEmpty
+              widget.dream.imageUrl.isNotEmpty
                   ? Image.network(
-                      dream.imageUrl,
-                      height: 200,
+                      widget.dream.imageUrl,
+                      height: 150,
                       width: double.infinity,
                       fit: BoxFit.cover,
                     )
                   : Text(''),
-                  SizedBox(
+              SizedBox(
                 height: 5,
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: <Widget>[
-                  Row(
-                    children: [
-                      Icon(Icons.thumb_up_alt_outlined),
-                      SizedBox(
-                        width: 3,
-                      ),
-                      Text('11'),
-                    ],
+                  InkWell(
+                    onTap: () {
+                      Provider.of<DreamsProvider>(context, listen: false)
+                          .addReaction(widget.dream, true)
+                          .then((response) {
+                        setState(() {
+                          if (response["likeSum"]) {
+                            widget.dream.likeLen += 1;
+                          }
+
+                          if (response["likeSubtract"]) {
+                            widget.dream.likeLen = widget.dream.likeLen > 0
+                                ? widget.dream.likeLen - 1
+                                : 0;
+                          }
+
+                          if (response["dislikeSubtract"]) {
+                            widget.dream.dislikeLen =
+                                widget.dream.dislikeLen > 0
+                                    ? widget.dream.dislikeLen - 1
+                                    : 0;
+                          }
+
+                          print(widget.dream.likeLen);
+                        });
+                      });
+                    },
+                    child: Row(
+                      children: [
+                        Icon(Icons.thumb_up_alt_outlined),
+                        SizedBox(
+                          width: 3,
+                        ),
+                        Text("${widget.dream.likeLen}"),
+                      ],
+                    ),
                   ),
-                  Row(
-                    children: [
-                      Icon(Icons.thumb_down_alt_outlined),
-                      SizedBox(
-                        width: 3,
-                      ),
-                      Text('2'),
-                    ],
+                  InkWell(
+                    onTap: () {
+                      Provider.of<DreamsProvider>(context, listen: false)
+                          .addReaction(widget.dream, false)
+                          .then((response) {
+                        setState(() {
+                          if (response["dislikeSum"]) {
+                            widget.dream.dislikeLen += 1;
+                          }
+
+                          if (response["dislikeSubtract"]) {
+                            widget.dream.dislikeLen =
+                                widget.dream.dislikeLen > 0
+                                    ? widget.dream.dislikeLen - 1
+                                    : 0;
+                          }
+
+                          if (response["likeSubtract"]) {
+                            widget.dream.likeLen = widget.dream.likeLen > 0
+                                ? widget.dream.likeLen - 1
+                                : 0;
+                          }
+
+                          print(widget.dream.dislikeLen);
+                        });
+                      });
+                    },
+                    child: Row(
+                      children: [
+                        Icon(Icons.thumb_down_alt_outlined),
+                        SizedBox(
+                          width: 3,
+                        ),
+                        Text("${widget.dream.dislikeLen}"),
+                      ],
+                    ),
                   ),
                   Row(
                     children: [
@@ -88,10 +169,13 @@ class DreamCard extends StatelessWidget {
                       SizedBox(
                         width: 3,
                       ),
-                      Text('2'),
+                      Text('${widget.dream.commentLen}'),
                     ],
                   ),
                 ],
+              ),
+              SizedBox(
+                height: 10,
               ),
             ],
           ),
@@ -103,7 +187,7 @@ class DreamCard extends StatelessWidget {
 
   Widget getCard(BuildContext context) {
     return InkWell(
-      onTap: () => selectDream(context, dream),
+      onTap: () => selectDream(context, widget.dream),
       child: Card(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(1),
@@ -125,14 +209,16 @@ class DreamCard extends StatelessWidget {
                 mainAxisSize: MainAxisSize.max,
                 children: [
                   Text(
-                    dream.title.isEmpty ? '' : dream.title.toUpperCase(),
+                    widget.dream.title.isEmpty
+                        ? ''
+                        : widget.dream.title.toUpperCase(),
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 15,
                     ),
                     textAlign: TextAlign.left,
                   ),
-                  Text(dream.description),
+                  Text(widget.dream.description),
                   SizedBox(
                     height: 5,
                   ),
@@ -140,10 +226,10 @@ class DreamCard extends StatelessWidget {
                     borderRadius: BorderRadius.all(
                       Radius.circular(7),
                     ),
-                    child: dream.imageUrl.isNotEmpty
+                    child: widget.dream.imageUrl.isNotEmpty
                         ? Image.network(
-                            dream.imageUrl,
-                            height: 150,
+                            widget.dream.imageUrl,
+                            height: 50,
                             width: 300,
                             fit: BoxFit.cover,
                           )

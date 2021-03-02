@@ -22,92 +22,110 @@ class _HomePageState extends State<HomePage> {
   var _title = '';
   bool _init = false;
   bool isLoading = false;
+  bool isPublic = false;
 
   void openDialogToSavingDream(BuildContext context) {
     //Navigator.of(context).pushNamed(FavoriteScreen.routeName);
-
+    isPublic = false;
     showDialog(
         builder: (BuildContext buildContext) {
-          return SingleChildScrollView(
-            child: AlertDialog(
-              content: Stack(
-                overflow: Overflow.visible,
-                children: <Widget>[
-                  Positioned(
-                    right: -40.0,
-                    top: -40.0,
-                    child: InkResponse(
-                      onTap: () {
+          return StatefulBuilder(
+            builder: (context, setState) {
+              return SingleChildScrollView(
+                child: AlertDialog(
+                  content: Stack(
+                    overflow: Overflow.visible,
+                    children: <Widget>[
+                      /*Positioned(
+                      right: -40.0,
+                      top: -40.0,
+                      child: InkResponse(
+                        onTap: () {
+                          _desc = '';
+                          _title = '';
+                          Navigator.of(context).pop();
+                        },
+                        child: CircleAvatar(
+                          child: Icon(Icons.close),
+                          backgroundColor: Colors.red,
+                        ),
+                      ),
+                    ),*/
+                      Text(
+                        'Typing dream!',
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 15),
+                      ),
+                      Form(
+                        key: _formKey,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: <Widget>[
+                            Padding(
+                              padding: EdgeInsets.all(8.0),
+                              child: TextFormField(
+                                maxLength: 5000,
+                                maxLines: 3,
+                                decoration:
+                                    InputDecoration(labelText: 'Dream *'),
+                                keyboardType: TextInputType.multiline,
+                                onSaved: (newValue) {
+                                  _desc = newValue;
+                                },
+                                validator: (value) {
+                                  if (value.isEmpty) {
+                                    return 'Please provide a value';
+                                  }
+
+                                  return null;
+                                },
+                              ),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.all(8.0),
+                              child: TextFormField(
+                                decoration: InputDecoration(
+                                    labelText: 'Title (optional)'),
+                                textInputAction: TextInputAction.next,
+                                onSaved: (newValue) {
+                                  _title = newValue;
+                                },
+                              ),
+                            ),
+                            CheckboxListTile(
+                              title: Text("Public"),
+                              value: isPublic,
+                              onChanged: (newValue) {
+                                setState(() {
+                                  isPublic = newValue;
+                                });
+                              },
+                              controlAffinity: ListTileControlAffinity
+                                  .leading, //  <-- leading Checkbox
+                            )
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  actions: [
+                    FlatButton(
+                      onPressed: () {
                         _desc = '';
                         _title = '';
-                        Navigator.of(context).pop();
+                        Navigator.of(context).pop(false);
                       },
-                      child: CircleAvatar(
-                        child: Icon(Icons.close),
-                        backgroundColor: Colors.red,
-                      ),
+                      child: Text('Cancel'),
                     ),
-                  ),
-                  Text(
-                    'Typing dream!',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-                  ),
-                  Form(
-                    key: _formKey,
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: <Widget>[
-                        Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: TextFormField(
-                            maxLength: 5000,
-                            maxLines: 3,
-                            decoration: InputDecoration(labelText: 'Dream *'),
-                            keyboardType: TextInputType.multiline,
-                            onSaved: (newValue) {
-                              _desc = newValue;
-                            },
-                            validator: (value) {
-                              if (value.isEmpty) {
-                                return 'Please provide a value';
-                              }
-
-                              return null;
-                            },
-                          ),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: TextFormField(
-                            decoration:
-                                InputDecoration(labelText: 'Title (optional)'),
-                            textInputAction: TextInputAction.next,
-                            onSaved: (newValue) {
-                              _title = newValue;
-                            },
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-              actions: [
-                FlatButton(
-                  onPressed: () {
-                    _desc = '';
-                    _title = '';
-                    Navigator.of(context).pop(false);
-                  },
-                  child: Text('Cancel'),
+                    RaisedButton(
+                        color: Theme.of(context).accentColor,
+                        textColor: Colors.white,
+                        child: Text("Save"),
+                        onPressed: () => onSaveDream()),
+                  ],
                 ),
-                RaisedButton(
-                    color: Theme.of(context).accentColor,
-                    textColor: Colors.white,
-                    child: Text("Save"),
-                    onPressed: () => onSaveDream()),
-              ],
-            ),
+              );
+            },
           );
         },
         context: context);
@@ -128,11 +146,12 @@ class _HomePageState extends State<HomePage> {
       _init = true;
     });
     Provider.of<DreamsProvider>(context, listen: false)
-        .addDream(Dream(
-            id: DateTime.now().toString(),
-            title: _title,
-            description: _desc,
-            isPublic: true))
+        .addDream(
+      Dream(
+          title: _title,
+          description: _desc,
+          isPublic: isPublic),
+    )
         .then((value) {
       setState(() {
         isLoading = false;
@@ -194,6 +213,7 @@ class _HomePageState extends State<HomePage> {
         child: Icon(Icons.add),
         onPressed: () => openDialogToSavingDream(context),
       ),
+      //floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       bottomNavigationBar: Container(
         height: 50.0,
       ),

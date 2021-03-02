@@ -14,6 +14,7 @@ class Dream {
   String created;
   String username;
   int userId;
+  String userImage;
 
   Dream(
       {this.id,
@@ -28,5 +29,6 @@ class Dream {
       this.likeLen,
       this.created,
       this.username,
-      this.userId});
+      this.userId,
+      this.userImage});
 }
