@@ -8,7 +8,7 @@ class AuthProvider with ChangeNotifier {
   String _userId;
   DateTime _expiryDate;
 
-  String baseUrl = 'http://192.168.0.5:8000/';
+  String baseUrl = 'http://192.168.0.8:8000/';
 
   bool get isAuth {
     return token != null;
