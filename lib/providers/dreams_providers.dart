@@ -16,7 +16,7 @@ class DreamsProvider with ChangeNotifier {
   List<dynamic> _ownDreamsTMP = [];
   List<Dream> _dreams = DUMMY_DREAMS;
 
-  String baseUrl = 'http://192.168.0.8:8000/';
+  String baseUrl = 'http://192.168.0.7:8000/';
 
   Future<void> getPreferencesInfo() async {
     final prefer = await SharedPreferences.getInstance();
@@ -142,25 +142,23 @@ class DreamsProvider with ChangeNotifier {
 
     _ownDreamsTMP = convert.jsonDecode(response.body) as List<dynamic>;
     _ownDreamsTMP.forEach((dreamData) {
-         
-          int userId = dreamData['user_account'];
-          String date =
-              dreamData['created_at'].substring(0, 16).replaceAll('T', " ");
-          _ownDreams.add(Dream(
-              id: dreamData['id'].toString(),
-              description: dreamData['description'],
-              title: dreamData['title'],
-              imageUrl: dreamData['image'],
-              isPublic: dreamData['is_public'],
-              commentLen: dreamData['comment_len'],
-              dislikeLen: dreamData['dislike_len'],
-              likeLen: dreamData['like_len'],
-              isVoice: dreamData['is_voice'],
-              username: _userName,
-              userId: userId,
-              
-              created: date));
-        });
+      int userId = dreamData['user_account'];
+      String date =
+          dreamData['created_at'].substring(0, 16).replaceAll('T', " ");
+      _ownDreams.add(Dream(
+          id: dreamData['id'].toString(),
+          description: dreamData['description'],
+          title: dreamData['title'],
+          imageUrl: dreamData['image'],
+          isPublic: dreamData['is_public'],
+          commentLen: dreamData['comment_len'],
+          dislikeLen: dreamData['dislike_len'],
+          likeLen: dreamData['like_len'],
+          isVoice: dreamData['is_voice'],
+          username: _userName,
+          userId: userId,
+          created: date));
+    });
 
     notifyListeners();
   }
@@ -188,6 +186,36 @@ class DreamsProvider with ChangeNotifier {
           convert.jsonDecode(response.body) as Map<String, Object>;
       print(reactionData);
       return Future.value(reactionData);
+    });
+  }
+
+  Future<void> editDream(Dream dream) async {
+    final url = baseUrl + "dreams/${dream.id}/";
+
+    int index = _ownDreams.indexWhere((Dream d) => d.id == dream.id);
+    _ownDreams.removeAt(index);
+    _ownDreams.insert(index, dream);
+
+    return http
+        .put(url,
+            headers: {
+              "Content-Type": "application/json",
+              "Accept": "application/json",
+              "Authorization": "token " + _token,
+            },
+            body: convert.jsonEncode({
+              "id": dream.id,
+              "title": dream.title,
+              "description": dream.description,
+              "is_public": dream.isPublic,
+              "user_account": _userId,
+              "image": dream.imageUrl
+            }))
+        .then((response) {
+      print(response);
+      var dreamData = convert.jsonDecode(response.body) as Map<String, Object>;
+
+      notifyListeners();
     });
   }
 }

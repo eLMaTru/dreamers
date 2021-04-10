@@ -1,10 +1,11 @@
 import 'package:dreamers/models/dream.dart';
 import 'package:dreamers/providers/dreams_providers.dart';
+import 'package:dreamers/screens/dream_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class EditDreamScreen extends StatefulWidget {
-  static const String routeName = '/addDream';
+  static const String routeName = '/editDream';
   @override
   _EditDreamScreenState createState() => _EditDreamScreenState();
 }
@@ -13,10 +14,12 @@ class _EditDreamScreenState extends State<EditDreamScreen> {
   final _imageUrlController = TextEditingController();
   final _imageFocusNode = FocusNode();
   final _form = GlobalKey<FormState>();
-  
+
   var _desc = '';
   var _title = '';
   bool isLoading = false;
+  bool _isPublic;
+  Dream dream;
 
   @override
   void dispose() {
@@ -43,31 +46,35 @@ class _EditDreamScreenState extends State<EditDreamScreen> {
       return;
     }
     _form.currentState.save();
+
     setState(() {
       isLoading = true;
     });
 
     Provider.of<DreamsProvider>(context, listen: false)
-        .addDream(Dream(
-            id: DateTime.now().toString(),
-            title: _title,
-            description: _desc,
-            isPublic: true))
+        .editDream(dream)
         .then((value) {
       setState(() {
         isLoading = true;
       });
       //Navigator.of(context).pop();
-      Navigator.of(context).pushReplacementNamed('/');
+      Navigator.of(context).pushReplacementNamed(DreamsScreen.routeName);
     });
-    print(_desc);
+    print(dream.description);
   }
 
   @override
   Widget build(BuildContext context) {
+    final routeArgs =
+        ModalRoute.of(context).settings.arguments as Map<String, Object>;
+    dream = Provider.of<DreamsProvider>(context, listen: false)
+        .findOwnDreamById(routeArgs['dreamId']);
+    _desc = dream.description;
+    _title = dream.title;
+    _isPublic = dream.isPublic;
     return Scaffold(
       appBar: AppBar(
-        title: Text('Add Dream'),
+        title: Text('Edit Dream'),
         actions: [
           IconButton(icon: Icon(Icons.save), onPressed: _saveForm),
         ],
@@ -83,12 +90,13 @@ class _EditDreamScreenState extends State<EditDreamScreen> {
                   child: ListView(
                     children: [
                       TextFormField(
+                        initialValue: dream.description,
                         maxLength: 5000,
                         maxLines: 3,
                         decoration: InputDecoration(labelText: 'Dream *'),
                         keyboardType: TextInputType.multiline,
                         onSaved: (newValue) {
-                          _desc = newValue;
+                          dream.description = newValue;
                         },
                         validator: (value) {
                           if (value.isEmpty) {
@@ -99,17 +107,29 @@ class _EditDreamScreenState extends State<EditDreamScreen> {
                         },
                       ),
                       TextFormField(
+                        initialValue: dream.title,
                         decoration:
                             InputDecoration(labelText: 'Title (optional)'),
                         textInputAction: TextInputAction.next,
                         onSaved: (newValue) {
-                          _title = newValue;
+                          dream.title = newValue;
                         },
                       ),
                       SizedBox(
                         height: 10,
                       ),
-                      Row(
+                      CheckboxListTile(
+                        title: Text("Public"),
+                        value: dream.isPublic,
+                        onChanged: (newValue) {
+                          setState(() {
+                            dream.isPublic = newValue;
+                          });
+                        },
+                        controlAffinity: ListTileControlAffinity
+                            .leading, //  <-- leading Checkbox
+                      ),
+                      /*Row(
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
                             Container(
@@ -141,7 +161,7 @@ class _EditDreamScreenState extends State<EditDreamScreen> {
                                 },
                               ),
                             ),
-                          ]),
+                          ]),*/
                       SizedBox(
                         height: 10,
                       ),

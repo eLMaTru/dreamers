@@ -36,7 +36,7 @@ class DrawerItem extends StatelessWidget {
                 .pushReplacementNamed(DreamsScreen.routeName),
           ),
           SizedBox(height: 5),
-          ListTile(
+         /* ListTile(
             leading: Icon(Icons.favorite),
             title: Text(
               'Favorites',
@@ -53,7 +53,7 @@ class DrawerItem extends StatelessWidget {
             ),
             onTap: () =>
                 Navigator.of(context).pushNamed(EditDreamScreen.routeName),
-          ),
+          ),*/
           ListTile(
             leading: Icon(Icons.logout),
             title: Text(

@@ -1,5 +1,6 @@
 import 'package:dreamers/models/dream.dart';
 import 'package:dreamers/providers/dreams_providers.dart';
+import 'package:dreamers/screens/edit_dream_screen.dart';
 import 'package:dreamers/widgets/drawer_item.dart';
 import 'package:dreamers/widgets/dream_card.dart';
 import 'package:flutter/material.dart';
@@ -34,7 +35,8 @@ class DreamsScreen extends StatelessWidget {
   }
 
   Widget customCard(context, dream) {
-    return Dismissible(direction: DismissDirection.endToStart,
+    return Dismissible(
+      direction: DismissDirection.endToStart,
       key: ValueKey(dream.id),
       background: Container(
         alignment: Alignment.centerRight,
@@ -42,7 +44,10 @@ class DreamsScreen extends StatelessWidget {
         margin: EdgeInsets.symmetric(
           horizontal: 15,
         ),
-        child: Icon(Icons.delete, color: Colors.white,),
+        child: Icon(
+          Icons.delete,
+          color: Colors.white,
+        ),
         color: Colors.red,
       ),
       child: Card(
@@ -56,6 +61,9 @@ class DreamsScreen extends StatelessWidget {
               ),
               onPressed: () {
                 print(dream.id);
+                Navigator.of(context).pushNamed(
+                    EditDreamScreen.routeName,
+                    arguments: {'dreamId': dream.id});
               },
             ),
             leading: Container(
