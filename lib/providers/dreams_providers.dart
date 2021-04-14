@@ -31,8 +31,9 @@ class DreamsProvider with ChangeNotifier {
   //get dreams
   Future<void> get dreamsRemote async {
     this.getPreferencesInfo().then((res) async {
-      final url = baseUrl + "dreams/status/?status=enabled&isPublic=True";
-
+      var url = Uri.parse(
+        baseUrl + "dreams/status/?status=enabled&isPublic=True",
+      );
       dreamList = [];
 
       try {
@@ -87,7 +88,7 @@ class DreamsProvider with ChangeNotifier {
   }
 
   Future<void> addDream(Dream dream) async {
-    final url = baseUrl + "dreams/";
+    final url = Uri.parse(baseUrl + "dreams/");
 
     return http
         .post(url,
@@ -129,7 +130,8 @@ class DreamsProvider with ChangeNotifier {
     if (_ownDreamsTMP != null && _ownDreamsTMP.length > 0) {
       return _ownDreamsTMP;
     }
-    String url = baseUrl + "dreams/?status=enabled&user_account=${_userId}";
+    final url =
+        Uri.parse(baseUrl + "dreams/?status=enabled&user_account=${_userId}");
 
     final response = await http.get(
       url,
@@ -164,7 +166,7 @@ class DreamsProvider with ChangeNotifier {
   }
 
   Future<Map<String, Object>> addReaction(dream, isLike) async {
-    final url = baseUrl + "reactions/sets/";
+    final url = Uri.parse(baseUrl + "reactions/sets/");
     print(this._userId);
     bool can = true;
 
@@ -190,7 +192,7 @@ class DreamsProvider with ChangeNotifier {
   }
 
   Future<void> editDream(Dream dream) async {
-    final url = baseUrl + "dreams/${dream.id}/";
+    final url = Uri.parse(baseUrl + "dreams/${dream.id}/");
 
     int index = _ownDreams.indexWhere((Dream d) => d.id == dream.id);
     _ownDreams.removeAt(index);
@@ -223,7 +225,7 @@ class DreamsProvider with ChangeNotifier {
     try {
       int index = _ownDreams.indexWhere((Dream d) => d.id == dream.id);
       _ownDreams.removeAt(index);
-      final url = baseUrl + "dreams/${dream.id}/";
+      final url = Uri.parse(baseUrl + "dreams/${dream.id}/");
 
       final response = await http.put(url,
           headers: {

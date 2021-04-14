@@ -23,7 +23,7 @@ class AuthProvider with ChangeNotifier {
   }
 
   Future<void> signup(String email, username, password) async {
-    String signupUrl = baseUrl + "users/create/";
+    var signupUrl = Uri.parse(baseUrl + "users/create/");
     try {
       final response = await http.post(
         signupUrl,
@@ -55,7 +55,7 @@ class AuthProvider with ChangeNotifier {
   }
 
   Future<void> login(String username, String password) async {
-    String loginUrl = baseUrl + "login/";
+    var loginUrl = Uri.parse(baseUrl + "login/");
 
     try {
       final response = await http.post(

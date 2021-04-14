@@ -180,7 +180,8 @@ class _DreamCardState extends State<DreamCard> {
             ],
           ),
           onTap: () {
-            print("object");
+           Navigator.of(context)
+                  .pushNamed(DreamDetailScreen.routeName, arguments: widget.dream);
           }),
     );
   }

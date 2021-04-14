@@ -23,4 +23,10 @@
   <key>MinimumOSVersion</key>
   <string>9.0</string>
 </dict>
+<!--editado -->
+<key>NSAppTransportSecurity</key>
+<dict>
+        <key>NSAllowsArbitraryLoads</key>
+        <true/>
+</dict>
 </plist>

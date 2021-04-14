@@ -150,7 +150,8 @@ class DreamsScreen extends StatelessWidget {
               ],
             ),
             onTap: () {
-              Navigator.of(context).pushNamed(DreamDetailScreen.routeName);
+              Navigator.of(context)
+                  .pushNamed(DreamDetailScreen.routeName, arguments: dream);
             }),
       ),
       confirmDismiss: (DismissDirection direction) async {
