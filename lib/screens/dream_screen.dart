@@ -6,14 +6,16 @@ import 'package:dreamers/widgets/dream_card.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import 'dream_detail_screen.dart';
+
 class DreamsScreen extends StatelessWidget {
   static const String routeName = "/dreams";
 
   @override
   Widget build(BuildContext context) {
-    final dreamsData = Provider.of<DreamsProvider>(context, listen: true);
-    dreamsData.getOwnDreams();
-    List<Dream> dreams = dreamsData.ownDreams;
+    final dp = Provider.of<DreamsProvider>(context, listen: true);
+    dp.getOwnDreams();
+    List<Dream> dreams = dp.ownDreams;
 
     return Scaffold(
       drawer: DrawerItem(),
@@ -21,11 +23,11 @@ class DreamsScreen extends StatelessWidget {
         title: Text('Dreams'),
         centerTitle: true,
       ),
-      body: dreamsData.dreams.length > 0
+      body: dp.dreams.length > 0
           ? Container(
               child: ListView.builder(
                 itemBuilder: (context, index) {
-                  return customCard(context, dreams[index]);
+                  return customCard(context, dreams[index], dp);
                 },
                 itemCount: dreams.length,
               ),
@@ -34,8 +36,12 @@ class DreamsScreen extends StatelessWidget {
     );
   }
 
-  Widget customCard(context, dream) {
+  Widget customCard(context, dream, dp) {
     return Dismissible(
+      onDismissed: (direction) {
+        dp.deleteDream(dream);
+        print('borrado!!');
+      },
       direction: DismissDirection.endToStart,
       key: ValueKey(dream.id),
       background: Container(
@@ -61,8 +67,7 @@ class DreamsScreen extends StatelessWidget {
               ),
               onPressed: () {
                 print(dream.id);
-                Navigator.of(context).pushNamed(
-                    EditDreamScreen.routeName,
+                Navigator.of(context).pushNamed(EditDreamScreen.routeName,
                     arguments: {'dreamId': dream.id});
               },
             ),
@@ -145,9 +150,29 @@ class DreamsScreen extends StatelessWidget {
               ],
             ),
             onTap: () {
-              print("object");
+              Navigator.of(context).pushNamed(DreamDetailScreen.routeName);
             }),
       ),
+      confirmDismiss: (DismissDirection direction) async {
+        return await showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: const Text("Confirm"),
+              content: const Text("Are you sure you wish to delete this item?"),
+              actions: <Widget>[
+                FlatButton(
+                    onPressed: () => Navigator.of(context).pop(true),
+                    child: const Text("DELETE")),
+                FlatButton(
+                  onPressed: () => Navigator.of(context).pop(false),
+                  child: const Text("CANCEL"),
+                ),
+              ],
+            );
+          },
+        );
+      },
     );
   }
 }

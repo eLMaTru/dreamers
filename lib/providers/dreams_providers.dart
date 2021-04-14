@@ -218,4 +218,30 @@ class DreamsProvider with ChangeNotifier {
       notifyListeners();
     });
   }
+
+  Future<void> deleteDream(Dream dream) async {
+    try {
+      int index = _ownDreams.indexWhere((Dream d) => d.id == dream.id);
+      _ownDreams.removeAt(index);
+      final url = baseUrl + "dreams/${dream.id}/";
+
+      final response = await http.put(url,
+          headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+            "Authorization": "token " + _token,
+          },
+          body: convert.jsonEncode({
+            "id": dream.id,
+            "title": dream.title,
+            "description": dream.description,
+            "is_public": dream.isPublic,
+            "user_account": _userId,
+            "image": dream.imageUrl,
+            "status": 'delete'
+          }));
+    } catch (error) {
+      print(error);
+    }
+  }
 }
