@@ -18,9 +18,9 @@ class _DreamCardState extends State<DreamCard> {
   final testText =
       "Creates a vertical array of children The [direction], [mainAxisAlignment], [mainAxisSize], [crossAxisAlignment], and [verticalDirection] arguments must not be null. If [crossAxisAlignment] is [CrossAxisAlignment.baseline], then [textBaseline] must not be null The [textDirection] argument defaults to the ambient [Directionality], if any. If there is no ambient directionality, and a text direction is going to be necessary to disambiguate start or end values for the [crossAxisAlignment], the [textDirection] must not be null.";
 
-  void selectDream(BuildContext context, Dream dream) {
+  void selectDream(BuildContext context, Dream dream, bool isComment) {
     Navigator.of(context)
-        .pushNamed(DreamDetailScreen.routeName, arguments: dream);
+        .pushNamed(DreamDetailScreen.routeName, arguments: {"dream":dream, "isComment":isComment});
   }
 
   @override
@@ -163,14 +163,17 @@ class _DreamCardState extends State<DreamCard> {
                       ],
                     ),
                   ),
-                  Row(
-                    children: [
-                      Icon(Icons.comment_outlined),
-                      SizedBox(
-                        width: 3,
-                      ),
-                      Text('${widget.dream.commentLen}'),
-                    ],
+                  InkWell(
+                    child: Row(
+                      children: [
+                        Icon(Icons.comment_outlined),
+                        SizedBox(
+                          width: 3,
+                        ),
+                        Text('${widget.dream.commentLen}'),
+                      ],
+                    ),
+                    onTap: () => selectDream(context, widget.dream, true),
                   ),
                 ],
               ),
@@ -179,16 +182,13 @@ class _DreamCardState extends State<DreamCard> {
               ),
             ],
           ),
-          onTap: () {
-           Navigator.of(context)
-                  .pushNamed(DreamDetailScreen.routeName, arguments: widget.dream);
-          }),
+          onTap: () => selectDream(context, widget.dream, false),),
     );
   }
 
   Widget getCard(BuildContext context) {
     return InkWell(
-      onTap: () => selectDream(context, widget.dream),
+      onTap: () => selectDream(context, widget.dream, false),
       child: Card(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(1),

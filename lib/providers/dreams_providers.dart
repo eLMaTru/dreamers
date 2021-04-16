@@ -246,4 +246,29 @@ class DreamsProvider with ChangeNotifier {
       print(error);
     }
   }
+
+  Future<void> addComment(String dreamId, String comment) async {
+    try {
+      final url = Uri.parse(baseUrl + "comments/");
+      final response = await http.post(url,
+          headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+            "Authorization": "token " + _token,
+          },
+          body: convert.jsonEncode({
+            "description": comment,
+            "username": _userName,
+            "dream": dreamId,
+            "user_account": _userId
+          }));
+
+      var commentData =
+          convert.jsonDecode(response.body) as Map<String, Object>;
+
+      notifyListeners();
+    } catch (error) {
+      print(error);
+    }
+  }
 }
