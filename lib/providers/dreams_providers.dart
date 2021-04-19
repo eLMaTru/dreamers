@@ -1,3 +1,4 @@
+import 'package:dreamers/models/comment.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../dummys/dummy_data.dart';
@@ -15,6 +16,7 @@ class DreamsProvider with ChangeNotifier {
   List<Dream> _ownDreams = [];
   List<dynamic> _ownDreamsTMP = [];
   List<Dream> _dreams = DUMMY_DREAMS;
+  List<Comment> _comments = [];
 
   String baseUrl = 'http://192.168.0.7:8000/';
 
@@ -165,32 +167,6 @@ class DreamsProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<Map<String, Object>> addReaction(dream, isLike) async {
-    final url = Uri.parse(baseUrl + "reactions/sets/");
-    print(this._userId);
-    bool can = true;
-
-    return http
-        .post(url,
-            headers: {
-              "Content-Type": "application/json",
-              "Accept": "application/json",
-              "Authorization": "token " + _token,
-            },
-            body: convert.jsonEncode({
-              "isLike": isLike,
-              "userName": _userName,
-              "dreamId": dream.id,
-              "userId": _userId,
-            }))
-        .then((response) {
-      var reactionData =
-          convert.jsonDecode(response.body) as Map<String, Object>;
-      print(reactionData);
-      return Future.value(reactionData);
-    });
-  }
-
   Future<void> editDream(Dream dream) async {
     final url = Uri.parse(baseUrl + "dreams/${dream.id}/");
 
@@ -246,6 +222,14 @@ class DreamsProvider with ChangeNotifier {
       print(error);
     }
   }
+//                          Dreams
+//--------------------------------------
+
+//                          COMMENT
+//
+  List<Comment> get commnets {
+    return [..._comments];
+  }
 
   Future<void> addComment(String dreamId, String comment) async {
     try {
@@ -263,12 +247,93 @@ class DreamsProvider with ChangeNotifier {
             "user_account": _userId
           }));
 
-      var commentData =
-          convert.jsonDecode(response.body) as Map<String, Object>;
+      var com = convert.jsonDecode(response.body) as Map<String, Object>;
+      _comments.add(Comment(
+          description: com['description'],
+          commentId: com['id'],
+          dreamId: com['dream'],
+          status: com['status'],
+          userId: com['user_account'],
+          username: com['username']));
+      notifyListeners();
+    } catch (error) {
+      print(error);
+    }
+  }
+
+  Future<void> fetchComments(Dream dream) async {
+    try {
+      if (_comments != null &&
+          _comments.length > 0 &&
+          _comments[0].dreamId == int.parse(dream.id)) {
+        return _comments;
+      }
+      final url =
+          Uri.parse(baseUrl + "comments/?status=enabled&dream=${dream.id}");
+      final response = await http.get(url, headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+        "Authorization": "token " + _token,
+      });
+      var commentData = convert.jsonDecode(response.body) as List<dynamic>;
+      if (commentData == null) {
+        return;
+      }
+      _comments = [];
+      commentData.forEach((com) {
+        _comments.add(Comment(
+            description: com['description'],
+            commentId: com['id'],
+            dreamId: com['dream'],
+            status: com['status'],
+            userId: com['user_account'],
+            username: com['username']));
+      });
 
       notifyListeners();
     } catch (error) {
       print(error);
     }
+  }
+
+  void clearComments() {
+    _comments = [];
+  }
+
+  //                          COMMENT
+//
+//
+//
+//-------------------------------------------------------------
+
+// Reactions
+//
+//
+//
+
+  Future<Map<String, Object>> addReaction(dream, isLike) async {
+    final url = Uri.parse(baseUrl + "reactions/sets/");
+    print(this._userId);
+    bool can = true;
+
+    return http
+        .post(url,
+            headers: {
+              "Content-Type": "application/json",
+              "Accept": "application/json",
+              "Authorization": "token " + _token,
+            },
+            body: convert.jsonEncode({
+              "isLike": isLike,
+              "userName": _userName,
+              "dreamId": dream.id,
+              "userId": _userId,
+            }))
+        .then((response) {
+      var reactionData =
+          convert.jsonDecode(response.body) as Map<String, Object>;
+      print(reactionData);
+      return Future.value(reactionData);
+    });
   }
 }

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:dreamers/models/comment.dart';
 import 'package:dreamers/models/dream.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -14,15 +15,33 @@ class DreamDetailScreen extends StatefulWidget {
 }
 
 class _DreamDetailScreenState extends State<DreamDetailScreen> {
+  List<Comment> comments = [];
   final _formKey = GlobalKey<FormState>();
   var _dreamId;
   var _comment;
   var _isComment = false;
   Dream dream;
+  bool isLoading = true;
 
   @override
   void initState() {
     // TODO: implement initState
+    //
+    Future.delayed(Duration.zero).then((value) async {
+      setState(() {
+        isLoading = true;
+      });
+      final args =
+          ModalRoute.of(context).settings.arguments as Map<String, Object>;
+      dream = args['dream'];
+      await Provider.of<DreamsProvider>(context, listen: false)
+          .fetchComments(dream);
+      comments = Provider.of<DreamsProvider>(context, listen: false).commnets;
+      setState(() {
+        isLoading = false;
+      });
+    });
+    super.initState();
 
     Timer.run(() {
       if (_isComment) {
@@ -34,20 +53,15 @@ class _DreamDetailScreenState extends State<DreamDetailScreen> {
   @override
   Widget build(BuildContext context) {
     //just test must be changed
+
     final args =
         ModalRoute.of(context).settings.arguments as Map<String, Object>;
-
+    //final dreamPro = Provider.of<DreamsProvider>(context, listen: false);
     dream = args['dream'];
-    dream =
-        Provider.of<DreamsProvider>(context, listen: false).findById(dream.id);
+    //dream = dreamPro.findById(dream.id);
     _dreamId = dream.id;
     _isComment = args['isComment'];
 
-    final comments = [
-      Text('username1: durisimo eso parece una movie e action'),
-      Text('username2: oye pero que vacaneria'),
-      Text("username3: seguro te despertaste con el corazon acelerado" * 4)
-    ];
     return Scaffold(
       appBar: AppBar(
         title: Text("Dreamers"),
@@ -78,7 +92,7 @@ class _DreamDetailScreenState extends State<DreamDetailScreen> {
               child: Padding(
                 padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                 child: Text(
-                  dream.description * 25,
+                  dream.description,
                 ),
               ),
               width: double.infinity,
@@ -188,16 +202,27 @@ class _DreamDetailScreenState extends State<DreamDetailScreen> {
                             EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                         child: Row(
                           children: [
-                            Expanded(
-                                child: InkWell(
-                                    onLongPress: () {
-                                      showDialog(
-                                        context: context,
-                                        builder: (_) =>
-                                            AlertDialog(title: Text("Delete (not action yet)")),
-                                      );
-                                    },
-                                    child: comments[index])),
+                            isLoading == true
+                                ? Center(child: CircularProgressIndicator())
+                                : Expanded(
+                                    child: InkWell(
+                                        onLongPress: () {
+                                          showDialog(
+                                              context: context,
+                                              builder: (_) => Center(
+                                                    child: FloatingActionButton(
+                                                      onPressed: () {
+                                                        print('borrado...');
+                                                      },
+                                                      child: Icon(
+                                                        Icons.delete_forever,
+                                                      ),
+                                                    ),
+                                                  ));
+                                        },
+                                        child: Text(comments[index].username +
+                                            ': ' +
+                                            comments[index].description))),
                             SizedBox(
                               height: 10,
                             )
@@ -290,11 +315,18 @@ class _DreamDetailScreenState extends State<DreamDetailScreen> {
 
     _formKey.currentState.save();
     _isComment = false;
-    _comment = '';
+
     Provider.of<DreamsProvider>(context, listen: false)
         .addComment(_dreamId, _comment)
-        .then((value) {});
-    Navigator.of(context).pop(false);
+        .then((value) {
+      setState(() {
+        comments = Provider.of<DreamsProvider>(context, listen: false).commnets;
+       
+      });
+
+      Navigator.of(context).pop(false);
+      _comment = '';
+    });
   }
 
   //build button

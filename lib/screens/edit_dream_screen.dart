@@ -1,7 +1,10 @@
+
+
 import 'package:dreamers/models/dream.dart';
 import 'package:dreamers/providers/dreams_providers.dart';
 import 'package:dreamers/screens/dream_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:provider/provider.dart';
 
 class EditDreamScreen extends StatefulWidget {
@@ -175,13 +178,13 @@ class _EditDreamScreenState extends State<EditDreamScreen> {
                               style: TextStyle(),
                             ),
                           ),
-                          RaisedButton(
+                          ElevatedButton(
                             onPressed: _saveForm,
                             child: Text(
                               "Save",
                               style: TextStyle(color: Colors.white),
                             ),
-                            color: Theme.of(context).accentColor,
+                            //color: Theme.of(context).accentColor,
                           ),
                         ],
                       ),

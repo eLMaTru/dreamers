@@ -147,10 +147,7 @@ class _HomePageState extends State<HomePage> {
     });
     Provider.of<DreamsProvider>(context, listen: false)
         .addDream(
-      Dream(
-          title: _title,
-          description: _desc,
-          isPublic: isPublic),
+      Dream(title: _title, description: _desc, isPublic: isPublic),
     )
         .then((value) {
       setState(() {
@@ -183,13 +180,18 @@ class _HomePageState extends State<HomePage> {
     super.didChangeDependencies();
   }
 
+  Future<void> refreshDreams(BuildContext context) async{
+    await Provider.of<DreamsProvider>(context, listen: false).dreamsRemote;
+  }
+
   @override
   Widget build(BuildContext context) {
     //providers
+   // Provider.of<DreamsProvider>(context, listen: false).clearComments();
     final dreamsData = Provider.of<DreamsProvider>(context);
     final dreams = dreamsData.dreams;
 
-    //final dreams = DUMMY_DREAMS.where((dream) => dream.isPublic).toList();
+    
 
     return Scaffold(
       drawer: DrawerItem(),
@@ -197,18 +199,21 @@ class _HomePageState extends State<HomePage> {
         title: Text('Dreamers'),
         centerTitle: true,
       ),
-      body: _init
-          ? Center(
-              child: CircularProgressIndicator(),
-            )
-          : Container(
-              child: ListView.builder(
-                itemBuilder: (context, index) {
-                  return DreamCard(dreams[index]);
-                },
-                itemCount: dreams.length,
+      body: RefreshIndicator(
+        onRefresh: () => refreshDreams(context),
+        child: _init
+            ? Center(
+                child: CircularProgressIndicator(),
+              )
+            : Container(
+                child: ListView.builder(
+                  itemBuilder: (context, index) {
+                    return DreamCard(dreams[index]);
+                  },
+                  itemCount: dreams.length,
+                ),
               ),
-            ),
+      ),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
         onPressed: () => openDialogToSavingDream(context),
