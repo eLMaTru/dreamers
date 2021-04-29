@@ -69,6 +69,7 @@ class DreamsScreen extends StatelessWidget {
                 print(dream.id);
                 Navigator.of(context).pushNamed(EditDreamScreen.routeName,
                     arguments: {'dreamId': dream.id});
+                   
               },
             ),
             leading: Container(
@@ -150,8 +151,8 @@ class DreamsScreen extends StatelessWidget {
               ],
             ),
             onTap: () {
-              Navigator.of(context)
-                  .pushNamed(DreamDetailScreen.routeName, arguments: dream);
+                 Navigator.of(context)
+        .pushNamed(DreamDetailScreen.routeName, arguments: {"dream":dream, "isComment":false});
             }),
       ),
       confirmDismiss: (DismissDirection direction) async {

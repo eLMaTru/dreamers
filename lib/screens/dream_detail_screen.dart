@@ -3,9 +3,8 @@ import 'dart:async';
 import 'package:dreamers/models/comment.dart';
 import 'package:dreamers/models/dream.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
+import 'package:dreamers/providers/dreams_providers.dart';
 import 'package:provider/provider.dart';
-import '../providers/dreams_providers.dart';
 
 class DreamDetailScreen extends StatefulWidget {
   static const routeName = "/dream-detail";
@@ -53,7 +52,7 @@ class _DreamDetailScreenState extends State<DreamDetailScreen> {
   @override
   Widget build(BuildContext context) {
     //just test must be changed
-
+//Navigator.pop(context,true);
     final args =
         ModalRoute.of(context).settings.arguments as Map<String, Object>;
     //final dreamPro = Provider.of<DreamsProvider>(context, listen: false);
@@ -64,6 +63,11 @@ class _DreamDetailScreenState extends State<DreamDetailScreen> {
 
     return Scaffold(
       appBar: AppBar(
+        leading: new IconButton(
+            icon: new Icon(Icons.arrow_back),
+            onPressed: () {
+              Navigator.of(context).pop('String');
+            }),
         title: Text("Dreamers"),
       ),
       body: SingleChildScrollView(
@@ -212,7 +216,31 @@ class _DreamDetailScreenState extends State<DreamDetailScreen> {
                                               builder: (_) => Center(
                                                     child: FloatingActionButton(
                                                       onPressed: () {
-                                                        print('borrado...');
+                                                        Provider.of<DreamsProvider>(
+                                                                context,
+                                                                listen: false)
+                                                            .deleteComment(
+                                                                comments[index])
+                                                            .then((cidx) {
+                                                          setState(() {
+                                                            comments
+                                                                .removeAt(cidx);
+                                                            if (dream
+                                                                    .commentLen >
+                                                                0) {
+                                                              dream.commentLen -=
+                                                                  1;
+                                                              Provider.of<DreamsProvider>(
+                                                                      context,
+                                                                      listen:
+                                                                          false)
+                                                                  .editDream(
+                                                                      dream);
+                                                            }
+                                                          });
+                                                          Navigator.of(context)
+                                                              .pop(false);
+                                                        });
                                                       },
                                                       child: Icon(
                                                         Icons.delete_forever,
@@ -321,7 +349,8 @@ class _DreamDetailScreenState extends State<DreamDetailScreen> {
         .then((value) {
       setState(() {
         comments = Provider.of<DreamsProvider>(context, listen: false).commnets;
-       
+        dream.commentLen += 1;
+        Provider.of<DreamsProvider>(context, listen: false).editDream(dream);
       });
 
       Navigator.of(context).pop(false);

@@ -170,10 +170,11 @@ class DreamsProvider with ChangeNotifier {
   Future<void> editDream(Dream dream) async {
     final url = Uri.parse(baseUrl + "dreams/${dream.id}/");
 
-    int index = _ownDreams.indexWhere((Dream d) => d.id == dream.id);
-    _ownDreams.removeAt(index);
-    _ownDreams.insert(index, dream);
-
+    if (dream.userId == int.parse(_userId) && _ownDreams.length > 0) {
+      int index = _ownDreams.indexWhere((Dream d) => d.id == dream.id);
+      _ownDreams.removeAt(index);
+      _ownDreams.insert(index, dream);
+    }
     return http
         .put(url,
             headers: {
@@ -187,7 +188,8 @@ class DreamsProvider with ChangeNotifier {
               "description": dream.description,
               "is_public": dream.isPublic,
               "user_account": _userId,
-              "image": dream.imageUrl
+              "image": dream.imageUrl,
+              "comment_len": dream.commentLen
             }))
         .then((response) {
       print(response);
@@ -255,6 +257,7 @@ class DreamsProvider with ChangeNotifier {
           status: com['status'],
           userId: com['user_account'],
           username: com['username']));
+
       notifyListeners();
     } catch (error) {
       print(error);
@@ -298,6 +301,66 @@ class DreamsProvider with ChangeNotifier {
 
   void clearComments() {
     _comments = [];
+  }
+
+  Future<int> deleteComment(Comment com) async {
+    try {
+      int index =
+          _comments.indexWhere((Comment c) => c.commentId == com.commentId);
+      _comments.removeAt(index);
+
+      final url = Uri.parse(baseUrl + "comments/${com.commentId}/");
+      final response = await http.put(url,
+          headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+            "Authorization": "token " + _token,
+          },
+          body: convert.jsonEncode({
+            "description": com.description,
+            "username": _userName,
+            "dream": com.dreamId,
+            "user_account": _userId,
+            "status": "delete"
+          }));
+
+      var data = convert.jsonDecode(response.body) as Map<String, Object>;
+
+      notifyListeners();
+      return index;
+    } catch (error) {}
+  }
+
+  void sumAndSustractCommentQ(String dreamId, bool isPlus) {
+    try {
+      Dream dream;
+      this._dreams.firstWhere((Dream d) {
+        if (d.id == dreamId) {
+          if (!isPlus && d.commentLen > 0) {
+            d.commentLen -= 1;
+          } else {
+            d.commentLen += 1;
+          }
+          dream = d;
+        }
+        return;
+      });
+
+      this._ownDreams.firstWhere((Dream dream) {
+        if (dream.id == dreamId) {
+          if (!isPlus && dream.commentLen > 0) {
+            dream.commentLen -= 1;
+          } else {
+            dream.commentLen += 1;
+          }
+        }
+        return;
+      });
+
+      this.editDream(dream);
+    } catch (error) {
+      print(error);
+    }
   }
 
   //                          COMMENT

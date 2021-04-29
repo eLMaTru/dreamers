@@ -189,7 +189,7 @@ class _HomePageState extends State<HomePage> {
     //providers
    // Provider.of<DreamsProvider>(context, listen: false).clearComments();
     final dreamsData = Provider.of<DreamsProvider>(context);
-    final dreams = dreamsData.dreams;
+    final dreamsHome = dreamsData.dreams;
 
     
 
@@ -208,9 +208,9 @@ class _HomePageState extends State<HomePage> {
             : Container(
                 child: ListView.builder(
                   itemBuilder: (context, index) {
-                    return DreamCard(dreams[index]);
+                    return DreamCard(dreamsHome[index]);
                   },
-                  itemCount: dreams.length,
+                  itemCount: dreamsHome.length,
                 ),
               ),
       ),
