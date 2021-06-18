@@ -4,11 +4,11 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthProvider with ChangeNotifier {
-  String _token;
-  String _userId;
-  DateTime _expiryDate;
+  String _token = '';
+  String _userId = '';
+  DateTime _expiryDate = DateTime.now();
 
-  String baseUrl = 'http://192.168.0.7:8000/';
+  String baseUrl = 'http://184.73.93.91:8000/';
 
   bool get isAuth {
     return token != null;
@@ -70,10 +70,10 @@ class AuthProvider with ChangeNotifier {
       final data = convert.jsonDecode(response.body) as Map<String, Object>;
       var errorMessage;
       if (data['__all__'] != null) {
-        throw errorMessage = data['__all__'];
+        throw errorMessage = data['__all__'] as Object;
       }
-      _token = data['token'];
-      _userId = data['user_account_id'];
+      _token = data['token'] as String;
+      _userId = data['user_account_id'] as String;
       notifyListeners();
       final prefer = await SharedPreferences.getInstance();
       final userData = convert.jsonEncode({
@@ -95,16 +95,16 @@ class AuthProvider with ChangeNotifier {
       return false;
     }
     final extractedUserData =
-        convert.jsonDecode(prefer.getString('userData')) as Map<String, Object>;
-    print(extractedUserData);
-    _token = extractedUserData['token'];
-    _userId = extractedUserData['userId'];
+        convert.jsonDecode(prefer.getString('userData') as String) as Map<String, Object>;
+    
+    _token = extractedUserData['token'] as String;
+    _userId = extractedUserData['userId'] as String;
     notifyListeners();
     return true;
   }
 
   Future<void> logout() async {
-    _token = null;
+    _token = '';
     notifyListeners();
     final prefer = await SharedPreferences.getInstance();
     prefer.remove('userData');

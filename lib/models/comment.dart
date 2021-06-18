@@ -8,7 +8,11 @@ class Comment {
   String username;
   String status;
 
-  Comment({
-     this.commentId, this.dreamId, this.userId, this.username, this.status, @required this.description
-  });
+  Comment(
+      {this.commentId = 0,
+      this.dreamId = 0,
+      this.userId = 0,
+      this.username = '',
+      this.status = '',
+      this.description = ''});
 }

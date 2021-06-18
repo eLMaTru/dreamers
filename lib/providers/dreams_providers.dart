@@ -9,25 +9,26 @@ import 'package:http/http.dart' as http;
 
 class DreamsProvider with ChangeNotifier {
   bool isLoading = true;
-  String _token;
-  String _userId;
-  String _userName;
+  String _token = '';
+  String _userId = '';
+  String _userName = '';
   List<Dream> dreamList = [];
   List<Dream> _ownDreams = [];
   List<dynamic> _ownDreamsTMP = [];
   List<Dream> _dreams = DUMMY_DREAMS;
   List<Comment> _comments = [];
 
-  String baseUrl = 'http://192.168.0.7:8000/';
+  String baseUrl = 'http://184.73.93.91:8000/';
 
   Future<void> getPreferencesInfo() async {
     final prefer = await SharedPreferences.getInstance();
     final extractedUserData =
-        convert.jsonDecode(prefer.getString('userData')) as Map<String, Object>;
-    print(extractedUserData);
-    _userId = extractedUserData["userId"];
-    _token = extractedUserData['token'];
-    _userName = extractedUserData['username'];
+        convert.jsonDecode(prefer.getString('userData') as String)
+            as Map<String, Object>;
+    // print(extractedUserData);
+    _userId = extractedUserData["userId"] as String;
+    _token = extractedUserData['token'] as String;
+    _userName = extractedUserData['username'] as String;
   }
 
   //get dreams
@@ -107,19 +108,19 @@ class DreamsProvider with ChangeNotifier {
               "image": dream.imageUrl
             }))
         .then((response) {
-      print(response);
+      // print(response);
       var dreamData = convert.jsonDecode(response.body) as Map<String, Object>;
-      String date = dreamData['created_at'];
+      String date = dreamData['created_at'] as String;
       date = date.substring(0, 16).replaceAll('T', " ");
       _dreams.add(Dream(
           description: dream.description,
-          commentLen: dreamData['comment_len'],
-          dislikeLen: dreamData['dislike_len'],
-          likeLen: dreamData['like_len'],
-          isVoice: dreamData['is_voice'],
-          imageUrl: dreamData['image'],
+          commentLen: dreamData['comment_len'] as int,
+          dislikeLen: dreamData['dislike_len'] as int,
+          likeLen: dreamData['like_len'] as int,
+          isVoice: dreamData['is_voice'] as bool,
+          imageUrl: dreamData['image'] as String,
           id: dreamData['id'].toString(),
-          userId: dreamData['user_account'],
+          userId: dreamData['user_account'] as int,
           title: dream.title,
           created: date));
       notifyListeners();
@@ -165,6 +166,7 @@ class DreamsProvider with ChangeNotifier {
     });
 
     notifyListeners();
+    return _ownDreamsTMP;
   }
 
   Future<void> editDream(Dream dream) async {
@@ -192,7 +194,7 @@ class DreamsProvider with ChangeNotifier {
               "comment_len": dream.commentLen
             }))
         .then((response) {
-      print(response);
+      //print(response);
       var dreamData = convert.jsonDecode(response.body) as Map<String, Object>;
 
       notifyListeners();
@@ -251,12 +253,12 @@ class DreamsProvider with ChangeNotifier {
 
       var com = convert.jsonDecode(response.body) as Map<String, Object>;
       _comments.add(Comment(
-          description: com['description'],
-          commentId: com['id'],
-          dreamId: com['dream'],
-          status: com['status'],
-          userId: com['user_account'],
-          username: com['username']));
+          description: com['description'] as String,
+          commentId: com['id'] as int,
+          dreamId: com['dream'] as int,
+          status: com['status'] as String,
+          userId: com['user_account'] as int,
+          username: com['username'] as String));
 
       notifyListeners();
     } catch (error) {
@@ -269,7 +271,7 @@ class DreamsProvider with ChangeNotifier {
       if (_comments != null &&
           _comments.length > 0 &&
           _comments[0].dreamId == int.parse(dream.id)) {
-        return _comments;
+        return; //_comments;
       }
       final url =
           Uri.parse(baseUrl + "comments/?status=enabled&dream=${dream.id}");
@@ -328,12 +330,15 @@ class DreamsProvider with ChangeNotifier {
 
       notifyListeners();
       return index;
-    } catch (error) {}
+    } catch (error) {
+      print('');
+      return 0;
+    }
   }
 
   void sumAndSustractCommentQ(String dreamId, bool isPlus) {
     try {
-      Dream dream;
+      Dream dream = Dream(description: '');
       this._dreams.firstWhere((Dream d) {
         if (d.id == dreamId) {
           if (!isPlus && d.commentLen > 0) {
@@ -343,7 +348,7 @@ class DreamsProvider with ChangeNotifier {
           }
           dream = d;
         }
-        return;
+        return false;
       });
 
       this._ownDreams.firstWhere((Dream dream) {
@@ -354,7 +359,7 @@ class DreamsProvider with ChangeNotifier {
             dream.commentLen += 1;
           }
         }
-        return;
+        return false;
       });
 
       this.editDream(dream);
@@ -376,7 +381,7 @@ class DreamsProvider with ChangeNotifier {
 
   Future<Map<String, Object>> addReaction(dream, isLike) async {
     final url = Uri.parse(baseUrl + "reactions/sets/");
-    print(this._userId);
+    // print(this._userId);
     bool can = true;
 
     return http
@@ -395,7 +400,7 @@ class DreamsProvider with ChangeNotifier {
         .then((response) {
       var reactionData =
           convert.jsonDecode(response.body) as Map<String, Object>;
-      print(reactionData);
+      // print(reactionData);
       return Future.value(reactionData);
     });
   }

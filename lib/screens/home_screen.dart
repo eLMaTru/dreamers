@@ -70,10 +70,10 @@ class _HomePageState extends State<HomePage> {
                                     InputDecoration(labelText: 'Dream *'),
                                 keyboardType: TextInputType.multiline,
                                 onSaved: (newValue) {
-                                  _desc = newValue;
+                                  _desc = newValue.toString();
                                 },
                                 validator: (value) {
-                                  if (value.isEmpty) {
+                                  if (value == '') {
                                     return 'Please provide a value';
                                   }
 
@@ -88,16 +88,16 @@ class _HomePageState extends State<HomePage> {
                                     labelText: 'Title (optional)'),
                                 textInputAction: TextInputAction.next,
                                 onSaved: (newValue) {
-                                  _title = newValue;
+                                  _title = newValue.toString();
                                 },
                               ),
                             ),
                             CheckboxListTile(
                               title: Text("Public"),
                               value: isPublic,
-                              onChanged: (newValue) {
+                              onChanged:  (newValue ) {
                                 setState(() {
-                                  isPublic = newValue;
+                                  isPublic =  newValue as bool;
                                 });
                               },
                               controlAffinity: ListTileControlAffinity
@@ -132,12 +132,13 @@ class _HomePageState extends State<HomePage> {
   }
 
   void onSaveDream() {
-    final isValid = _formKey.currentState.validate();
+  
+    final isValid = _formKey.currentState!.validate();
     if (!isValid) {
       return;
     }
 
-    _formKey.currentState.save();
+    _formKey.currentState!.save();
     //setState(() { _init = true;   });
     print(_desc + "\n" + _title);
 
@@ -180,18 +181,16 @@ class _HomePageState extends State<HomePage> {
     super.didChangeDependencies();
   }
 
-  Future<void> refreshDreams(BuildContext context) async{
+  Future<void> refreshDreams(BuildContext context) async {
     await Provider.of<DreamsProvider>(context, listen: false).dreamsRemote;
   }
 
   @override
   Widget build(BuildContext context) {
     //providers
-   // Provider.of<DreamsProvider>(context, listen: false).clearComments();
+    // Provider.of<DreamsProvider>(context, listen: false).clearComments();
     final dreamsData = Provider.of<DreamsProvider>(context);
     final dreamsHome = dreamsData.dreams;
-
-    
 
     return Scaffold(
       drawer: DrawerItem(),

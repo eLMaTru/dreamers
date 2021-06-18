@@ -84,9 +84,9 @@ class AuthScreen extends StatelessWidget {
 }
 
 class AuthCard extends StatefulWidget {
-  const AuthCard({
-    Key key,
-  }) : super(key: key);
+  /*const AuthCard({
+     Key key,
+  }) : super(key: key);*/
 
   @override
   _AuthCardState createState() => _AuthCardState();
@@ -104,11 +104,11 @@ class _AuthCardState extends State<AuthCard> {
   final _passwordController = TextEditingController();
 
   Future<void> _submit() async {
-    if (!_formKey.currentState.validate()) {
+    if (!_formKey.currentState!.validate()) {
       // Invalid!
       return;
     }
-    _formKey.currentState.save();
+    _formKey.currentState!.save();
 
     setState(() {
       _isLoading = true;
@@ -118,11 +118,11 @@ class _AuthCardState extends State<AuthCard> {
       if (_authMode == AuthMode.Login) {
         // Log user in
         final response = await Provider.of<AuthProvider>(context, listen: false)
-            .login(_authData['username'], _authData['password']);
+            .login(_authData['username'] as String, _authData['password'] as String);
       } else {
         // Sign user up
         final response = await Provider.of<AuthProvider>(context, listen: false)
-            .signup(_authData['email'], _authData['username'],
+            .signup(_authData['email'] as String, _authData['username'],
                 _authData['password']);
       }
       Navigator.of(context).pushReplacementNamed('/home');
@@ -173,13 +173,13 @@ class _AuthCardState extends State<AuthCard> {
                   decoration: InputDecoration(labelText: 'Username'),
                   keyboardType: TextInputType.emailAddress,
                   validator: (value) {
-                    if (value.isEmpty) {
+                    if (value!.isEmpty) {
                       return 'Invalid username!';
                     }
                     return null;
                   },
                   onSaved: (value) {
-                    _authData['username'] = value;
+                    _authData['username'] = value as String;
                   },
                 ),
                 if (_authMode == AuthMode.Signup)
@@ -187,13 +187,13 @@ class _AuthCardState extends State<AuthCard> {
                     decoration: InputDecoration(labelText: 'E-Mail'),
                     keyboardType: TextInputType.emailAddress,
                     validator: (value) {
-                      if (value.isEmpty || !value.contains('@')) {
+                      if (value!.isEmpty || !value.contains('@')) {
                         return 'Invalid email!';
                       }
                       return null;
                     },
                     onSaved: (value) {
-                      _authData['email'] = value;
+                      _authData['email'] = value as String;
                     },
                   ),
                 TextFormField(
@@ -201,13 +201,13 @@ class _AuthCardState extends State<AuthCard> {
                   obscureText: true,
                   controller: _passwordController,
                   validator: (value) {
-                    if (value.isEmpty || value.length < 5) {
+                    if (value!.isEmpty || value.length < 5) {
                       return 'Password is too short!';
                     }
                     return null;
                   },
                   onSaved: (value) {
-                    _authData['password'] = value;
+                    _authData['password'] = value as String;
                   },
                 ),
                 if (_authMode == AuthMode.Signup)
@@ -239,7 +239,7 @@ class _AuthCardState extends State<AuthCard> {
                     padding:
                         EdgeInsets.symmetric(horizontal: 30.0, vertical: 8.0),
                     color: Theme.of(context).primaryColor,
-                    textColor: Theme.of(context).primaryTextTheme.button.color,
+                    textColor: Theme.of(context).primaryTextTheme.button!.color,
                   ),
                 FlatButton(
                   child: Text(

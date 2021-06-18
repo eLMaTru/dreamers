@@ -19,7 +19,7 @@ class _DreamDetailScreenState extends State<DreamDetailScreen> {
   var _dreamId;
   var _comment;
   var _isComment = false;
-  Dream dream;
+  Dream dream = Dream(description: '');
   bool isLoading = true;
 
   @override
@@ -31,8 +31,8 @@ class _DreamDetailScreenState extends State<DreamDetailScreen> {
         isLoading = true;
       });
       final args =
-          ModalRoute.of(context).settings.arguments as Map<String, Object>;
-      dream = args['dream'];
+          ModalRoute.of(context)!.settings.arguments as Map<String, Object>;
+      dream = args['dream'] as Dream;
       await Provider.of<DreamsProvider>(context, listen: false)
           .fetchComments(dream);
       comments = Provider.of<DreamsProvider>(context, listen: false).commnets;
@@ -54,12 +54,12 @@ class _DreamDetailScreenState extends State<DreamDetailScreen> {
     //just test must be changed
 //Navigator.pop(context,true);
     final args =
-        ModalRoute.of(context).settings.arguments as Map<String, Object>;
+        ModalRoute.of(context)!.settings.arguments as Map<String, Object>;
     //final dreamPro = Provider.of<DreamsProvider>(context, listen: false);
-    dream = args['dream'];
+    dream = args['dream'] as Dream;
     //dream = dreamPro.findById(dream.id);
     _dreamId = dream.id;
-    _isComment = args['isComment'];
+    _isComment = args['isComment'] as bool;
 
     return Scaffold(
       appBar: AppBar(
@@ -114,16 +114,16 @@ class _DreamDetailScreenState extends State<DreamDetailScreen> {
                         .addReaction(dream, true)
                         .then((response) {
                       setState(() {
-                        if (response["likeSum"]) {
+                        if (response["likeSum"] == true) {
                           dream.likeLen += 1;
                         }
 
-                        if (response["likeSubtract"]) {
+                        if (response["likeSubtract"] == true) {
                           dream.likeLen =
                               dream.likeLen > 0 ? dream.likeLen - 1 : 0;
                         }
 
-                        if (response["dislikeSubtract"]) {
+                        if (response["dislikeSubtract"] == true) {
                           dream.dislikeLen =
                               dream.dislikeLen > 0 ? dream.dislikeLen - 1 : 0;
                         }
@@ -148,16 +148,16 @@ class _DreamDetailScreenState extends State<DreamDetailScreen> {
                         .addReaction(dream, false)
                         .then((response) {
                       setState(() {
-                        if (response["dislikeSum"]) {
+                        if (response["dislikeSum"] == true) {
                           dream.dislikeLen += 1;
                         }
 
-                        if (response["dislikeSubtract"]) {
+                        if (response["dislikeSubtract"] == true) {
                           dream.dislikeLen =
                               dream.dislikeLen > 0 ? dream.dislikeLen - 1 : 0;
                         }
 
-                        if (response["likeSubtract"]) {
+                        if (response["likeSubtract"] == true) {
                           dream.likeLen =
                               dream.likeLen > 0 ? dream.likeLen - 1 : 0;
                         }
@@ -309,7 +309,7 @@ class _DreamDetailScreenState extends State<DreamDetailScreen> {
                               print(newValue);
                             },
                             validator: (value) {
-                              if (value.isEmpty) {
+                              if (value!.isEmpty) {
                                 return 'Please provide a value';
                               }
 
@@ -336,12 +336,12 @@ class _DreamDetailScreenState extends State<DreamDetailScreen> {
   }
 
   void onSaveComment() {
-    final isValid = _formKey.currentState.validate();
+    final isValid = _formKey.currentState!.validate();
     if (!isValid) {
       return;
     }
 
-    _formKey.currentState.save();
+    _formKey.currentState!.save();
     _isComment = false;
 
     Provider.of<DreamsProvider>(context, listen: false)

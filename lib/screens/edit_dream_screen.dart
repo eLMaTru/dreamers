@@ -1,5 +1,3 @@
-
-
 import 'package:dreamers/models/dream.dart';
 import 'package:dreamers/providers/dreams_providers.dart';
 import 'package:dreamers/screens/dream_screen.dart';
@@ -21,8 +19,8 @@ class _EditDreamScreenState extends State<EditDreamScreen> {
   var _desc = '';
   var _title = '';
   bool isLoading = false;
-  bool _isPublic;
-  Dream dream;
+  bool _isPublic = false;
+  Dream dream = Dream(description: '');
 
   @override
   void dispose() {
@@ -44,11 +42,11 @@ class _EditDreamScreenState extends State<EditDreamScreen> {
   }
 
   void _saveForm() {
-    final isValid = _form.currentState.validate();
+    final isValid = _form.currentState!.validate();
     if (!isValid) {
       return;
     }
-    _form.currentState.save();
+    _form.currentState!.save();
 
     setState(() {
       isLoading = true;
@@ -69,9 +67,9 @@ class _EditDreamScreenState extends State<EditDreamScreen> {
   @override
   Widget build(BuildContext context) {
     final routeArgs =
-        ModalRoute.of(context).settings.arguments as Map<String, Object>;
+        ModalRoute.of(context)!.settings.arguments as Map<String, Object>;
     dream = Provider.of<DreamsProvider>(context, listen: false)
-        .findOwnDreamById(routeArgs['dreamId']);
+        .findOwnDreamById(routeArgs['dreamId'].toString());
     _desc = dream.description;
     _title = dream.title;
     _isPublic = dream.isPublic;
@@ -99,10 +97,10 @@ class _EditDreamScreenState extends State<EditDreamScreen> {
                         decoration: InputDecoration(labelText: 'Dream *'),
                         keyboardType: TextInputType.multiline,
                         onSaved: (newValue) {
-                          dream.description = newValue;
+                          dream.description = newValue.toString();
                         },
                         validator: (value) {
-                          if (value.isEmpty) {
+                          if (value == '') {
                             return 'Please provide a value';
                           }
 
@@ -115,7 +113,7 @@ class _EditDreamScreenState extends State<EditDreamScreen> {
                             InputDecoration(labelText: 'Title (optional)'),
                         textInputAction: TextInputAction.next,
                         onSaved: (newValue) {
-                          dream.title = newValue;
+                          dream.title = newValue.toString();
                         },
                       ),
                       SizedBox(
@@ -126,7 +124,7 @@ class _EditDreamScreenState extends State<EditDreamScreen> {
                         value: dream.isPublic,
                         onChanged: (newValue) {
                           setState(() {
-                            dream.isPublic = newValue;
+                            dream.isPublic = newValue as bool;
                           });
                         },
                         controlAffinity: ListTileControlAffinity

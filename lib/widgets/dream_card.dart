@@ -99,17 +99,17 @@ class _DreamCardState extends State<DreamCard> {
                         .addReaction(widget.dream, true)
                         .then((response) {
                       setState(() {
-                        if (response["likeSum"]) {
+                        if (response["likeSum"] == true) {
                           widget.dream.likeLen += 1;
                         }
 
-                        if (response["likeSubtract"]) {
+                        if (response["likeSubtract"] == true) {
                           widget.dream.likeLen = widget.dream.likeLen > 0
                               ? widget.dream.likeLen - 1
                               : 0;
                         }
 
-                        if (response["dislikeSubtract"]) {
+                        if (response["dislikeSubtract"] == true) {
                           widget.dream.dislikeLen = widget.dream.dislikeLen > 0
                               ? widget.dream.dislikeLen - 1
                               : 0;
@@ -135,17 +135,17 @@ class _DreamCardState extends State<DreamCard> {
                         .addReaction(widget.dream, false)
                         .then((response) {
                       setState(() {
-                        if (response["dislikeSum"]) {
+                        if (response["dislikeSum"] == true) {
                           widget.dream.dislikeLen += 1;
                         }
 
-                        if (response["dislikeSubtract"]) {
+                        if (response["dislikeSubtract"] == true) {
                           widget.dream.dislikeLen = widget.dream.dislikeLen > 0
                               ? widget.dream.dislikeLen - 1
                               : 0;
                         }
 
-                        if (response["likeSubtract"]) {
+                        if (response["likeSubtract"] == true) {
                           widget.dream.likeLen = widget.dream.likeLen > 0
                               ? widget.dream.likeLen - 1
                               : 0;

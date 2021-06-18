@@ -18,18 +18,18 @@ class Dream {
 
 
   Dream(
-      {this.id,
+      {this.id='',
       this.title = '',
-      @required this.description,
+      @required this.description = '',
       this.imageUrl = '',
       this.isPublic = false,
-      this.isVoice,
-      this.isFavorite,
-      this.commentLen,
-      this.dislikeLen,
-      this.likeLen,
-      this.created,
-      this.username,
-      this.userId,
-      this.userImage});
+      this.isVoice = false,
+      this.isFavorite= false,
+      this.commentLen = 0,
+      this.dislikeLen = 0,
+      this.likeLen = 0,
+      this.created = '',
+      this.username = '',
+      this.userId = 0,
+      this.userImage = ''});
 }
